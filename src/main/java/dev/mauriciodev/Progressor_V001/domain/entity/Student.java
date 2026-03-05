@@ -2,6 +2,7 @@ package dev.mauriciodev.Progressor_V001.domain.entity;
 
 import dev.mauriciodev.Progressor_V001.domain.enums.Goal;
 import dev.mauriciodev.Progressor_V001.domain.enums.TrainingLevel;
+import dev.mauriciodev.Progressor_V001.domain.interfaces.Progressable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -16,7 +17,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "students")
-public class Student extends Person {
+public class Student extends Person implements Progressable {
 
   @Column(nullable = false)
   private Integer age;
@@ -51,6 +52,20 @@ public class Student extends Person {
     this.height = height;
     this.goal = goal;
     this.trainingLevel = trainingLevel;
+  }
+
+  @Override
+  public void evolve() {
+    this.trainingLevel = switch (this.trainingLevel) {
+      case BEGINNER -> TrainingLevel.INTERMEDIATE;
+      case INTERMEDIATE -> TrainingLevel.ADVANCED;
+      case ADVANCED -> throw new IllegalStateException("Student is already at the highest level");
+    };
+  }
+
+  @Override
+  public String evaluateProgress() {
+    return "Student " + getName() + " is currently at level: " + trainingLevel;
   }
 
   public Integer getAge() {
