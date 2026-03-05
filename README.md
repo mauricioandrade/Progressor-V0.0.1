@@ -115,10 +115,10 @@ com.progressor
 ## 🗺️ Roadmap
 
 - [x] 🏗️ **M1 — Project Foundation** — Setup, Docker, enums, package structure
-- [ ] 🧱 **M2 — Core Entities** — Person, Student, PersonalTrainer, TrainingPlan
-- [ ] ⚙️ **M3 — Business Layer** — Repositories and Services
-- [ ] 🌐 **M4 — REST API** — Controllers and DTOs
-- [ ] 📈 **M5 — Progression System** — Progressable interface and evolution logic
+- [x] 🧱 **M2 — Core Entities** — Person, Student, PersonalTrainer, TrainingPlan
+- [x] ⚙️ **M3 — Business Layer** — Repositories and Services
+- [x] 🌐 **M4 — REST API** — Controllers and DTOs
+- [x] 📈 **M5 — Progression System** — Progressable interface and evolution logic
 
 ---
 
@@ -236,10 +236,10 @@ com.progressor
 ## 🗺️ Roadmap
 
 - [x] 🏗️ **M1 — Project Foundation** — Setup, Docker, enums, estrutura de pacotes
-- [ ] 🧱 **M2 — Core Entities** — Person, Student, PersonalTrainer, TrainingPlan
-- [ ] ⚙️ **M3 — Business Layer** — Repositórios e Services
-- [ ] 🌐 **M4 — REST API** — Controllers e DTOs
-- [ ] 📈 **M5 — Progression System** — Interface Progressable e lógica de evolução
+- [x] 🧱 **M2 — Core Entities** — Person, Student, PersonalTrainer, TrainingPlan
+- [x] ⚙️ **M3 — Business Layer** — Repositórios e Services
+- [x] 🌐 **M4 — REST API** — Controllers e DTOs
+- [x] 📈 **M5 — Progression System** — Interface Progressable e lógica de evolução
 
 ---
 
