@@ -4,9 +4,9 @@
 <img src="https://img.shields.io/badge/Spring%20Boot-4.0.3-brightgreen?style=for-the-badge&logo=springboot&logoColor=white"/>
 <img src="https://img.shields.io/badge/PostgreSQL-Docker-blue?style=for-the-badge&logo=postgresql&logoColor=white"/>
 <img src="https://img.shields.io/badge/Maven-C71A36?style=for-the-badge&logo=apachemaven&logoColor=white"/>
+<img src="https://img.shields.io/badge/Actuator-enabled-brightgreen?style=for-the-badge&logo=springboot&logoColor=white"/>
 
-<br/>
-<br/>
+<br/><br/>
 
 # 📈 Progressor
 
@@ -24,7 +24,7 @@
 
 ---
 
-## 🛠️ Technologies
+## 🛠️ Tech Stack
 
 | Technology | Version | Purpose |
 |---|---|---|
@@ -32,7 +32,8 @@
 | Spring Boot | 4.0.3 | Application framework |
 | Spring Web | — | REST API |
 | Spring Data JPA | — | Database persistence |
-| PostgreSQL | Latest | Relational database |
+| Spring Actuator | — | Health check and monitoring |
+| PostgreSQL | 18 | Relational database |
 | Docker | — | Local database container |
 | Maven | — | Dependency management |
 
@@ -68,19 +69,9 @@ mvn spring-boot:run
 http://localhost:8080
 ```
 
----
-
-## 🗂️ Package Structure
-
+**5. Check application health**
 ```
-com.progressor
-├── controller        → REST endpoints
-├── service           → Business logic
-├── repository        → Database access (JPA)
-└── domain
-    ├── entity        → JPA entities (Person, Student, PersonalTrainer, TrainingPlan)
-    ├── enums         → TrainingLevel, Goal
-    └── interfaces    → Progressable
+GET http://localhost:8080/actuator/health
 ```
 
 ---
@@ -110,20 +101,115 @@ com.progressor
 | `GET` | `/training-plans` | List all plans |
 | `POST` | `/training-plans/{id}/assign/{studentId}` | Assign plan to student |
 
+### Monitoring
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/actuator/health` | Application health check |
+| `GET` | `/actuator/info` | Application info |
+
+---
+
+## 🗂️ Package Structure
+
+```
+com.progressor
+├── controller        → REST endpoints
+├── service           → Business logic
+├── repository        → Database access (JPA)
+└── domain
+    ├── entity        → JPA entities (Person, Student, PersonalTrainer, TrainingPlan)
+    ├── enums         → TrainingLevel, Goal
+    └── interfaces    → Progressable
+```
+
 ---
 
 ## 🗺️ Roadmap
 
-- [x] 🏗️ **M1 — Project Foundation** — Setup, Docker, enums, package structure
-- [ ] 🧱 **M2 — Core Entities** — Person, Student, PersonalTrainer, TrainingPlan
-- [ ] ⚙️ **M3 — Business Layer** — Repositories and Services
-- [ ] 🌐 **M4 — REST API** — Controllers and DTOs
-- [ ] 📈 **M5 — Progression System** — Progressable interface and evolution logic
+- [x] 🏗️ **M1** — Project Foundation (setup, Docker, enums, package structure)
+- [x] 🧱 **M2** — Core Entities (Person, Student, PersonalTrainer, TrainingPlan)
+- [x] ⚙️ **M3** — Business Layer (repositories and services)
+- [x] 🌐 **M4** — REST API (controllers and DTOs)
+- [x] 📈 **M5** — Progression System (Progressable interface and evolution logic)
+- [x] 🩺 **M6** — Health Check (Spring Actuator)
+- [ ] 📦 **M7** — Docker Complete (Dockerfile and full docker-compose)
+- [ ] 📖 **M8** — API Documentation (Swagger / OpenAPI)
+- [ ] 🔐 **M9** — Authentication (Spring Security)
 
 ---
 
-<br/>
-<br/>
+## 🤝 How to Contribute
+
+We welcome contributions! Follow the steps below to avoid conflicts and keep things organized.
+
+### 1. Fork the repository
+Click the **Fork** button at the top right of this page.
+
+### 2. Clone your fork
+```bash
+git clone https://github.com/YOUR_USERNAME/Progressor-V0.0.1.git
+cd Progressor-V0.0.1
+```
+
+### 3. Set up the upstream remote
+```bash
+git remote add upstream https://github.com/mauricioandrade/Progressor-V0.0.1.git
+```
+
+### 4. Pick an issue
+- Go to the [Issues](https://github.com/mauricioandrade/Progressor-V0.0.1/issues) tab
+- Pick an open issue that interests you
+- Comment: **"I'd like to work on this"**
+- Wait for it to be assigned to you
+
+### 5. Create a branch from develop
+```bash
+git checkout develop
+git pull upstream develop
+git checkout -b feature/issue-XX-short-description
+```
+
+### 6. Commit your changes
+```bash
+git commit -m "feat(scope): short description"
+```
+
+### 7. Push and open a Pull Request
+```bash
+git push origin feature/issue-XX-short-description
+```
+
+Open a **Pull Request** targeting the `develop` branch — **not** `main`.
+
+### 8. Stay in sync to avoid conflicts
+Before opening your PR, always sync with upstream:
+```bash
+git fetch upstream
+git rebase upstream/develop
+```
+
+Resolve any conflicts locally before pushing.
+
+---
+
+## 📋 Commit Convention
+
+```
+<type>(<scope>): <short message>
+```
+
+| Type | When to use |
+|---|---|
+| `feat` | New feature |
+| `fix` | Bug fix |
+| `chore` | Setup, config, dependencies |
+| `refactor` | Code improvement without behavior change |
+| `docs` | Documentation |
+| `test` | Tests |
+
+---
+
+<br/><br/>
 
 ---
 
@@ -139,7 +225,7 @@ com.progressor
 
 ## 📌 Sobre o Projeto
 
-**Progressor** é um sistema de gerenciamento de alunos de academia com foco em **evolução**. A plataforma acompanha alunos, personal trainers e planos de treino — evoluindo automaticamente o nível e o plano de cada aluno conforme ele avança ao longo do tempo.
+**Progressor** é um sistema de gerenciamento de alunos de academia com foco em **evolução**. A plataforma acompanha alunos, personal trainers e planos de treino — evoluindo automaticamente o nível e o plano de cada aluno conforme ele progride ao longo do tempo.
 
 > O sistema cresce junto com o aluno. Do iniciante ao avançado, cada etapa é registrada.
 
@@ -153,7 +239,8 @@ com.progressor
 | Spring Boot | 4.0.3 | Framework da aplicação |
 | Spring Web | — | API REST |
 | Spring Data JPA | — | Persistência de dados |
-| PostgreSQL | Latest | Banco de dados relacional |
+| Spring Actuator | — | Health check e monitoramento |
+| PostgreSQL | 18 | Banco de dados relacional |
 | Docker | — | Container do banco local |
 | Maven | — | Gerenciamento de dependências |
 
@@ -189,19 +276,9 @@ mvn spring-boot:run
 http://localhost:8080
 ```
 
----
-
-## 🗂️ Estrutura de Pacotes
-
+**5. Verifique a saúde da aplicação**
 ```
-com.progressor
-├── controller        → Endpoints REST
-├── service           → Regras de negócio
-├── repository        → Acesso ao banco (JPA)
-└── domain
-    ├── entity        → Entidades JPA (Person, Student, PersonalTrainer, TrainingPlan)
-    ├── enums         → TrainingLevel, Goal
-    └── interfaces    → Progressable
+GET http://localhost:8080/actuator/health
 ```
 
 ---
@@ -231,18 +308,114 @@ com.progressor
 | `GET` | `/training-plans` | Listar todos os planos |
 | `POST` | `/training-plans/{id}/assign/{studentId}` | Atribuir plano ao aluno |
 
+### Monitoramento
+| Método | Endpoint | Descrição |
+|---|---|---|
+| `GET` | `/actuator/health` | Health check da aplicação |
+| `GET` | `/actuator/info` | Informações da aplicação |
+
+---
+
+## 🗂️ Estrutura de Pacotes
+
+```
+com.progressor
+├── controller        → Endpoints REST
+├── service           → Regras de negócio
+├── repository        → Acesso ao banco (JPA)
+└── domain
+    ├── entity        → Entidades JPA (Person, Student, PersonalTrainer, TrainingPlan)
+    ├── enums         → TrainingLevel, Goal
+    └── interfaces    → Progressable
+```
+
 ---
 
 ## 🗺️ Roadmap
 
-- [x] 🏗️ **M1 — Project Foundation** — Setup, Docker, enums, estrutura de pacotes
-- [ ] 🧱 **M2 — Core Entities** — Person, Student, PersonalTrainer, TrainingPlan
-- [ ] ⚙️ **M3 — Business Layer** — Repositórios e Services
-- [ ] 🌐 **M4 — REST API** — Controllers e DTOs
-- [ ] 📈 **M5 — Progression System** — Interface Progressable e lógica de evolução
+- [x] 🏗️ **M1** — Project Foundation (setup, Docker, enums, estrutura de pacotes)
+- [x] 🧱 **M2** — Core Entities (Person, Student, PersonalTrainer, TrainingPlan)
+- [x] ⚙️ **M3** — Business Layer (repositórios e services)
+- [x] 🌐 **M4** — REST API (controllers e DTOs)
+- [x] 📈 **M5** — Progression System (interface Progressable e lógica de evolução)
+- [x] 🩺 **M6** — Health Check (Spring Actuator)
+- [ ] 📦 **M7** — Docker Complete (Dockerfile e docker-compose completo)
+- [ ] 📖 **M8** — API Documentation (Swagger / OpenAPI)
+- [ ] 🔐 **M9** — Authentication (Spring Security)
+
+---
+
+## 🤝 Como Contribuir
+
+Contribuições são bem-vindas! Siga os passos abaixo para evitar conflitos e manter o projeto organizado.
+
+### 1. Faça um Fork do repositório
+Clique no botão **Fork** no canto superior direito desta página.
+
+### 2. Clone o seu fork
+```bash
+git clone https://github.com/SEU_USUARIO/Progressor-V0.0.1.git
+cd Progressor-V0.0.1
+```
+
+### 3. Configure o remote upstream
+```bash
+git remote add upstream https://github.com/mauricioandrade/Progressor-V0.0.1.git
+```
+
+### 4. Escolha uma issue
+- Acesse a aba [Issues](https://github.com/mauricioandrade/Progressor-V0.0.1/issues)
+- Escolha uma issue aberta que te interesse
+- Comente: **"Gostaria de trabalhar nessa issue"**
+- Aguarde ser atribuída a você
+
+### 5. Crie uma branch a partir da develop
+```bash
+git checkout develop
+git pull upstream develop
+git checkout -b feature/issue-XX-descricao-curta
+```
+
+### 6. Faça seus commits
+```bash
+git commit -m "feat(escopo): descrição curta em inglês"
+```
+
+### 7. Suba e abra um Pull Request
+```bash
+git push origin feature/issue-XX-descricao-curta
+```
+
+Abra um **Pull Request** apontando para a branch `develop` — **não** para a `main`.
+
+### 8. Evite conflitos
+Antes de abrir o PR, sincronize com o upstream:
+```bash
+git fetch upstream
+git rebase upstream/develop
+```
+
+Resolva qualquer conflito localmente antes de subir.
+
+---
+
+## 📋 Convenção de Commits
+
+```
+<tipo>(<escopo>): <mensagem curta em inglês>
+```
+
+| Tipo | Quando usar |
+|---|---|
+| `feat` | Nova funcionalidade |
+| `fix` | Correção de bug |
+| `chore` | Setup, config, dependências |
+| `refactor` | Melhoria sem mudar comportamento |
+| `docs` | Documentação |
+| `test` | Testes |
 
 ---
 
 <div align="center">
-  <sub>Built with 💪 by <a href="https://github.com/mauricioandrade">mauricioandrade</a></sub>
+  <sub>Built with 💪 by <a href="https://github.com/mauricioandrade">mauricioandrade</a> and contributors</sub>
 </div>
