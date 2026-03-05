@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:latest
+    container_name: progressor-db
+    environment:
+      POSTGRES_DB: progressor
+      POSTGRES_USER: progressor
+      POSTGRES_PASSWORD: progressor
+    ports:
+      - "5432:5432"
+    volumes:
+      - progressor_data:/var/lib/postgresql
+
+volumes:
+  progressor_data:
