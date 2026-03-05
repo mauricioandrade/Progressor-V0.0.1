@@ -41,7 +41,9 @@ public class Student extends Person implements Progressable {
   private TrainingPlan currentTrainingPlan;
 
   @OneToMany
-  @JoinTable(name = "student_training_history", joinColumns = @JoinColumn(name = "student_id"), inverseJoinColumns = @JoinColumn(name = "training_plan_id"))
+  @JoinTable(name = "student_training_history",
+      joinColumns = @JoinColumn(name = "student_id"),
+      inverseJoinColumns = @JoinColumn(name = "training_plan_id"))
   private List<TrainingPlan> trainingHistory = new ArrayList<>();
 
   protected Student() {
