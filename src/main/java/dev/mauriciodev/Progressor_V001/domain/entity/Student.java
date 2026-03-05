@@ -44,6 +44,10 @@ public class Student extends Person implements Progressable {
   @JoinTable(name = "student_training_history", joinColumns = @JoinColumn(name = "student_id"), inverseJoinColumns = @JoinColumn(name = "training_plan_id"))
   private List<TrainingPlan> trainingHistory = new ArrayList<>();
 
+  protected Student() {
+    super(null, null, null, null);
+  }
+
   public Student(Long id, String name, String email, String phone, Integer age, Double weight,
       Double height, Goal goal, TrainingLevel trainingLevel) {
     super(id, name, email, phone);

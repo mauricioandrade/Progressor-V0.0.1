@@ -18,6 +18,9 @@ public abstract class Person {
   private String email;
   private String phone;
 
+  protected Person() {
+  }
+
   public Person(Long id, String name, String email, String phone) {
     this.id = id;
     this.name = name;

@@ -5,6 +5,7 @@ import dev.mauriciodev.Progressor_V001.domain.entity.TrainingPlan;
 import dev.mauriciodev.Progressor_V001.domain.enums.TrainingLevel;
 import dev.mauriciodev.Progressor_V001.repository.StudentRepository;
 import dev.mauriciodev.Progressor_V001.repository.TrainingPlanRepository;
+import jakarta.transaction.Transactional;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +25,7 @@ public class StudentService {
     return studentRepository.save(student);
   }
 
+  @Transactional
   public Student findById(Long id) {
     return studentRepository.findById(id)
         .orElseThrow(() -> new RuntimeException("Student not found with id: " + id));
@@ -33,6 +35,7 @@ public class StudentService {
     return studentRepository.findAll();
   }
 
+  @Transactional
   public Student progress(Long id) {
     Student student = findById(id);
 

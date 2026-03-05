@@ -7,6 +7,7 @@ import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -32,11 +33,14 @@ public class TrainingPlan {
   @Column(nullable = false)
   private TrainingLevel level;
 
-  @ElementCollection
+  @ElementCollection(fetch = FetchType.EAGER)
   @CollectionTable(name = "training_plan_exercises",
       joinColumns = @JoinColumn(name = "training_plan_id"))
   @Column(name = "exercise")
   private List<String> exercises;
+
+  protected TrainingPlan() {
+  }
 
   public TrainingPlan(Long id, String name, Integer durationWeeks,
       TrainingLevel level, List<String> exercises) {

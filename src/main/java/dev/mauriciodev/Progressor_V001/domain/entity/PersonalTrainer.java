@@ -14,6 +14,10 @@ public class PersonalTrainer extends Person {
   @Column(nullable = false)
   private String specialty;
 
+  protected PersonalTrainer() {
+    super(null, null, null, null);
+  }
+
   public PersonalTrainer(Long id, String name, String email, String phone,
       String cref, String specialty) {
     super(id, name, email, phone);

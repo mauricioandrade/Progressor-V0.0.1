@@ -5,6 +5,7 @@ import dev.mauriciodev.Progressor_V001.dto.request.StudentRequest;
 import dev.mauriciodev.Progressor_V001.dto.response.StudentResponse;
 import dev.mauriciodev.Progressor_V001.dto.response.TrainingPlanResponse;
 import dev.mauriciodev.Progressor_V001.service.StudentService;
+import jakarta.transaction.Transactional;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -67,6 +68,7 @@ public class StudentController {
     }
   }
 
+  @Transactional
   @GetMapping("/{id}/history")
   public ResponseEntity<List<TrainingPlanResponse>> getHistory(@PathVariable Long id) {
     Student student = studentService.findById(id);
