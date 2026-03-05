@@ -1,3 +1,15 @@
 spring:
-  application:
-    name: Progressor-V0.0.1
+  datasource:
+    url: jdbc:postgresql://localhost:5432/progressor
+    username: progressor
+    password: progressor
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
