@@ -10,6 +10,24 @@ services:
       - "5432:5432"
     volumes:
       - progressor_data:/var/lib/postgresql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U progressor -d progressor" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    container_name: progressor-app
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/progressor
+      SPRING_DATASOURCE_USERNAME: progressor
+      SPRING_DATASOURCE_PASSWORD: progressor
+    depends_on:
+      postgres:
+        condition: service_healthy
 
 volumes:
   progressor_data:
