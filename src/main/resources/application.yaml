@@ -22,3 +22,7 @@ management:
   endpoint:
     health:
       show-details: always
+
+jwt:
+  secret: "3f8a2b1c9d4e7f6a0b5c8d2e1f4a7b3c9d6e2f8a1b4c7d0e3f6a9b2c5d8e1f4"
+  expiration-ms: 86400000
