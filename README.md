@@ -132,8 +132,8 @@ com.progressor
 - [x] 🌐 **M4** — REST API (controllers and DTOs)
 - [x] 📈 **M5** — Progression System (Progressable interface and evolution logic)
 - [x] 🩺 **M6** — Health Check (Spring Actuator)
-- [ ] 📦 **M7** — Docker Complete (Dockerfile and full docker-compose)
-- [ ] 📖 **M8** — API Documentation (Swagger / OpenAPI)
+- [x] 📦 **M7** — Docker Complete (Dockerfile and full docker-compose)
+- [x] 📖 **M8** — API Documentation (Swagger / OpenAPI)
 - [ ] 🔐 **M9** — Authentication (Spring Security)
 
 ---
@@ -339,8 +339,8 @@ com.progressor
 - [x] 🌐 **M4** — REST API (controllers e DTOs)
 - [x] 📈 **M5** — Progression System (interface Progressable e lógica de evolução)
 - [x] 🩺 **M6** — Health Check (Spring Actuator)
-- [ ] 📦 **M7** — Docker Complete (Dockerfile e docker-compose completo)
-- [ ] 📖 **M8** — API Documentation (Swagger / OpenAPI)
+- [x] 📦 **M7** — Docker Complete (Dockerfile e docker-compose completo)
+- [x] 📖 **M8** — API Documentation (Swagger / OpenAPI)
 - [ ] 🔐 **M9** — Authentication (Spring Security)
 
 ---
