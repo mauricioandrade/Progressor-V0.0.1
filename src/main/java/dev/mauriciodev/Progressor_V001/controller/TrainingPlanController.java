@@ -6,6 +6,10 @@ import dev.mauriciodev.Progressor_V001.dto.request.TrainingPlanRequest;
 import dev.mauriciodev.Progressor_V001.dto.response.StudentResponse;
 import dev.mauriciodev.Progressor_V001.dto.response.TrainingPlanResponse;
 import dev.mauriciodev.Progressor_V001.service.TrainingPlanService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/training-plans")
+@Tag(name = "Training Plans", description = "Endpoints for managing training plans")
 public class TrainingPlanController {
 
   private final TrainingPlanService trainingPlanService;
@@ -27,6 +32,11 @@ public class TrainingPlanController {
   }
 
   @PostMapping
+  @Operation(summary = "Create a training plan", description = "Creates and saves a new training plan")
+  @ApiResponses({
+      @ApiResponse(responseCode = "201", description = "Training plan created successfully"),
+      @ApiResponse(responseCode = "400", description = "Invalid request data")
+  })
   public ResponseEntity<TrainingPlanResponse> create(@RequestBody TrainingPlanRequest request) {
     TrainingPlan plan = new TrainingPlan(
         null,
@@ -40,6 +50,8 @@ public class TrainingPlanController {
   }
 
   @GetMapping
+  @Operation(summary = "List all training plans", description = "Returns a list of all registered training plans")
+  @ApiResponse(responseCode = "200", description = "Training plans listed successfully")
   public ResponseEntity<List<TrainingPlanResponse>> findAll() {
     List<TrainingPlanResponse> response = trainingPlanService.findAll()
         .stream()
@@ -49,11 +61,22 @@ public class TrainingPlanController {
   }
 
   @GetMapping("/{id}")
+  @Operation(summary = "Find training plan by ID", description = "Returns a single training plan by its ID")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Training plan found"),
+      @ApiResponse(responseCode = "404", description = "Training plan not found")
+  })
   public ResponseEntity<TrainingPlanResponse> findById(@PathVariable Long id) {
     return ResponseEntity.ok(toResponse(trainingPlanService.findById(id)));
   }
 
   @PostMapping("/{id}/assign/{studentId}")
+  @Operation(summary = "Assign plan to student",
+      description = "Assigns a training plan to a specific student")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Plan assigned successfully"),
+      @ApiResponse(responseCode = "404", description = "Training plan or student not found")
+  })
   public ResponseEntity<StudentResponse> assignToStudent(
       @PathVariable Long id,
       @PathVariable Long studentId) {
