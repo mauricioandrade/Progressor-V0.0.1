@@ -1,6 +1,7 @@
 package dev.mauriciodev.Progressor_V001.domain.student;
 
 import dev.mauriciodev.Progressor_V001.domain.person.Person;
+import dev.mauriciodev.Progressor_V001.domain.trainer.PersonalTrainer;
 import dev.mauriciodev.Progressor_V001.domain.training.TrainingPlan;
 import dev.mauriciodev.Progressor_V001.domain.shared.Goal;
 import dev.mauriciodev.Progressor_V001.domain.shared.TrainingLevel;
@@ -49,6 +50,10 @@ public class Student extends Person implements Progressable {
   @OneToMany
   @JoinTable(name = "student_training_history", joinColumns = @JoinColumn(name = "student_id"), inverseJoinColumns = @JoinColumn(name = "training_plan_id"))
   private List<TrainingPlan> trainingHistory = new ArrayList<>();
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "trainer_id")
+  private PersonalTrainer trainer;
 
   protected Student() {
     super(null, null, null, null);
@@ -100,6 +105,14 @@ public class Student extends Person implements Progressable {
 
   public Goal getGoal() {
     return goal;
+  }
+
+  public PersonalTrainer getTrainer() {
+    return trainer;
+  }
+
+  public void setTrainer(PersonalTrainer trainer) {
+    this.trainer = trainer;
   }
 
   public void setAge(Integer age) {
