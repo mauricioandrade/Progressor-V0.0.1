@@ -1,4 +1,4 @@
-package dev.mauriciodev.Progressor_V001.application.auth.training;
+package dev.mauriciodev.Progressor_V001.application.training;
 
 import dev.mauriciodev.Progressor_V001.domain.shared.TrainingLevel;
 import java.util.List;

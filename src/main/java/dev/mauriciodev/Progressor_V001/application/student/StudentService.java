@@ -1,6 +1,7 @@
 package dev.mauriciodev.Progressor_V001.application.student;
 
 import dev.mauriciodev.Progressor_V001.domain.student.Student;
+import dev.mauriciodev.Progressor_V001.domain.student.StudentNotFoundException;
 import dev.mauriciodev.Progressor_V001.domain.training.TrainingPlan;
 import dev.mauriciodev.Progressor_V001.domain.shared.TrainingLevel;
 import dev.mauriciodev.Progressor_V001.infrastructure.persistence.StudentRepository;
@@ -28,7 +29,7 @@ public class StudentService {
   @Transactional
   public Student findById(Long id) {
     return studentRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("Student not found with id: " + id));
+        .orElseThrow(() -> new StudentNotFoundException(id));
   }
 
   public List<Student> findAll() {

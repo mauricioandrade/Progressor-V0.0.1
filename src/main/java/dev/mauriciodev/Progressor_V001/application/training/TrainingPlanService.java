@@ -1,8 +1,9 @@
-package dev.mauriciodev.Progressor_V001.application.auth.training;
+package dev.mauriciodev.Progressor_V001.application.training;
 
 import dev.mauriciodev.Progressor_V001.application.student.StudentService;
 import dev.mauriciodev.Progressor_V001.domain.student.Student;
 import dev.mauriciodev.Progressor_V001.domain.training.TrainingPlan;
+import dev.mauriciodev.Progressor_V001.domain.training.TrainingPlanNotFoundException;
 import dev.mauriciodev.Progressor_V001.infrastructure.persistence.TrainingPlanRepository;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ public class TrainingPlanService {
 
   public TrainingPlan findById(Long id) {
     return trainingPlanRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("TrainingPlan not found with id: " + id));
+        .orElseThrow(() -> new TrainingPlanNotFoundException(id));
   }
 
   public List<TrainingPlan> findAll() {

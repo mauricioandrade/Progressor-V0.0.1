@@ -1,6 +1,7 @@
-package dev.mauriciodev.Progressor_V001.application.auth.trainer;
+package dev.mauriciodev.Progressor_V001.application.trainer;
 
 import dev.mauriciodev.Progressor_V001.domain.trainer.PersonalTrainer;
+import dev.mauriciodev.Progressor_V001.domain.trainer.TrainerNotFoundException;
 import dev.mauriciodev.Progressor_V001.infrastructure.persistence.PersonalTrainerRepository;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,7 @@ public class PersonalTrainerService {
 
   public PersonalTrainer findById(Long id) {
     return personalTrainerRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("PersonalTrainer not found with id: " + id));
+        .orElseThrow(() -> new TrainerNotFoundException(id));
   }
 
   public List<PersonalTrainer> findAll() {

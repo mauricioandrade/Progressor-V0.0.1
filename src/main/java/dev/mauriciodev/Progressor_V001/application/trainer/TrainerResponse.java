@@ -1,4 +1,4 @@
-package dev.mauriciodev.Progressor_V001.application.auth.trainer;
+package dev.mauriciodev.Progressor_V001.application.trainer;
 
 public record TrainerResponse(
     Long id,

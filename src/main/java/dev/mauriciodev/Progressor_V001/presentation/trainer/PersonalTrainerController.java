@@ -1,9 +1,9 @@
 package dev.mauriciodev.Progressor_V001.presentation.trainer;
 
 import dev.mauriciodev.Progressor_V001.domain.trainer.PersonalTrainer;
-import dev.mauriciodev.Progressor_V001.application.auth.trainer.TrainerRequest;
-import dev.mauriciodev.Progressor_V001.application.auth.trainer.TrainerResponse;
-import dev.mauriciodev.Progressor_V001.application.auth.trainer.PersonalTrainerService;
+import dev.mauriciodev.Progressor_V001.application.trainer.TrainerRequest;
+import dev.mauriciodev.Progressor_V001.application.trainer.TrainerResponse;
+import dev.mauriciodev.Progressor_V001.application.trainer.PersonalTrainerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

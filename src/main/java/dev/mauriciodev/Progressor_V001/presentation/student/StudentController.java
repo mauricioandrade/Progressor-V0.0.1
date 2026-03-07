@@ -3,7 +3,7 @@ package dev.mauriciodev.Progressor_V001.presentation.student;
 import dev.mauriciodev.Progressor_V001.domain.student.Student;
 import dev.mauriciodev.Progressor_V001.application.student.StudentRequest;
 import dev.mauriciodev.Progressor_V001.application.student.StudentResponse;
-import dev.mauriciodev.Progressor_V001.application.auth.training.TrainingPlanResponse;
+import dev.mauriciodev.Progressor_V001.application.training.TrainingPlanResponse;
 import dev.mauriciodev.Progressor_V001.application.student.StudentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

@@ -1,6 +1,8 @@
 package dev.mauriciodev.Progressor_V001.presentation.exception;
 
-import java.util.HashMap;
+import dev.mauriciodev.Progressor_V001.domain.student.StudentNotFoundException;
+import dev.mauriciodev.Progressor_V001.domain.trainer.TrainerNotFoundException;
+import dev.mauriciodev.Progressor_V001.domain.training.TrainingPlanNotFoundException;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,20 +14,26 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(IllegalArgumentException.class)
   public ResponseEntity<Map<String, String>> handleIllegalArgument(IllegalArgumentException ex) {
-    Map<String, String> errorResponse = new HashMap<>();
-    errorResponse.put("error", ex.getMessage());
-    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    return ResponseEntity
+        .status(HttpStatus.BAD_REQUEST)
+        .body(Map.of("error", ex.getMessage()));
+  }
+
+  @ExceptionHandler({
+      StudentNotFoundException.class,
+      TrainerNotFoundException.class,
+      TrainingPlanNotFoundException.class
+  })
+  public ResponseEntity<Map<String, String>> handleNotFound(RuntimeException ex) {
+    return ResponseEntity
+        .status(HttpStatus.NOT_FOUND)
+        .body(Map.of("error", ex.getMessage()));
   }
 
   @ExceptionHandler(RuntimeException.class)
   public ResponseEntity<Map<String, String>> handleRuntime(RuntimeException ex) {
-    Map<String, String> errorResponse = new HashMap<>();
-    errorResponse.put("error", ex.getMessage());
-
-    if (ex.getMessage() != null && ex.getMessage().contains("Invalid credentials")) {
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
-    }
-
-    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+    return ResponseEntity
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .body(Map.of("error", ex.getMessage()));
   }
 }

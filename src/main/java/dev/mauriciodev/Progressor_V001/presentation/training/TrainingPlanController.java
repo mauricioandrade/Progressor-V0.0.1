@@ -2,10 +2,10 @@ package dev.mauriciodev.Progressor_V001.presentation.training;
 
 import dev.mauriciodev.Progressor_V001.domain.student.Student;
 import dev.mauriciodev.Progressor_V001.domain.training.TrainingPlan;
-import dev.mauriciodev.Progressor_V001.application.auth.training.TrainingPlanRequest;
+import dev.mauriciodev.Progressor_V001.application.training.TrainingPlanRequest;
 import dev.mauriciodev.Progressor_V001.application.student.StudentResponse;
-import dev.mauriciodev.Progressor_V001.application.auth.training.TrainingPlanResponse;
-import dev.mauriciodev.Progressor_V001.application.auth.training.TrainingPlanService;
+import dev.mauriciodev.Progressor_V001.application.training.TrainingPlanResponse;
+import dev.mauriciodev.Progressor_V001.application.training.TrainingPlanService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
