@@ -11,7 +11,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 @Service
-public class StudentService {
+public final class StudentService {
 
   private final StudentRepository studentRepository;
   private final TrainingPlanRepository trainingPlanRepository;

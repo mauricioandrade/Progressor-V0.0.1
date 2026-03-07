@@ -7,7 +7,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 @Service
-public class PersonalTrainerService {
+public final class PersonalTrainerService {
 
   private final PersonalTrainerRepository personalTrainerRepository;
 
