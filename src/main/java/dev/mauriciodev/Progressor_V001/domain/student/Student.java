@@ -102,6 +102,22 @@ public class Student extends Person implements Progressable {
     return goal;
   }
 
+  public void setAge(Integer age) {
+    this.age = age;
+  }
+
+  public void setWeight(Double weight) {
+    this.weight = weight;
+  }
+
+  public void setHeight(Double height) {
+    this.height = height;
+  }
+
+  public void setGoal(Goal goal) {
+    this.goal = goal;
+  }
+
   public TrainingLevel getTrainingLevel() {
     return trainingLevel;
   }
