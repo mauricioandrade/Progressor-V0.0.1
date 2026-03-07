@@ -37,7 +37,7 @@ public final class AuthService {
     User user = User.create(
         request.email(),
         passwordEncoder.encode(request.password()),
-        Role.USER
+        Role.STUDENT
     );
 
     userRepository.save(user);
