@@ -27,18 +27,18 @@
 ## 🛠️ Tech Stack
 
 | Technology | Version | Purpose |
-|---|---|---|
-| Java | 25 | Main language |
-| Spring Boot | 4.0.3 | Application framework |
-| Spring Web | — | REST API |
-| Spring Data JPA | — | Database persistence |
-| Spring Security | 7.x | Authentication and authorization |
-| JJWT | 0.12.6 | JWT token generation and validation |
-| Spring Actuator | — | Health check and monitoring |
-| SpringDoc OpenAPI | — | Swagger documentation |
-| PostgreSQL | 18 | Relational database |
-| Docker | — | Local database container |
-| Maven | — | Dependency management |
+|---|---------|---|
+| Java | 25      | Main language |
+| Spring Boot | 4.0.3   | Application framework |
+| Spring Web | 4.0.3   | REST API |
+| Spring Data JPA | 4.0.3   | Database persistence |
+| Spring Security | 7.x     | Authentication and authorization |
+| JJWT | 0.12.6  | JWT token generation and validation |
+| Spring Actuator | 4.0.3   | Health check and monitoring |
+| SpringDoc OpenAPI | 2.8.5       | Swagger documentation |
+| PostgreSQL | 18      | Relational database |
+| Docker | —       | Local database container |
+| Maven | —       | Dependency management |
 
 ---
 
