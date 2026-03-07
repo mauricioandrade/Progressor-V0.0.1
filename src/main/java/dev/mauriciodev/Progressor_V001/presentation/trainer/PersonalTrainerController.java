@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +37,7 @@ public class PersonalTrainerController {
       @ApiResponse(responseCode = "201", description = "Trainer registered successfully"),
       @ApiResponse(responseCode = "400", description = "Invalid request data")
   })
-  public ResponseEntity<TrainerResponse> register(@RequestBody TrainerRequest request) {
+  public ResponseEntity<TrainerResponse> register(@Valid @RequestBody TrainerRequest request) {
     PersonalTrainer trainer = new PersonalTrainer(
         null,
         request.name(),

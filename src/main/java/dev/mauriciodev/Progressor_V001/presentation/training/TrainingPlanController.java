@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +38,7 @@ public class TrainingPlanController {
       @ApiResponse(responseCode = "201", description = "Training plan created successfully"),
       @ApiResponse(responseCode = "400", description = "Invalid request data")
   })
-  public ResponseEntity<TrainingPlanResponse> create(@RequestBody TrainingPlanRequest request) {
+  public ResponseEntity<TrainingPlanResponse> create(@Valid @RequestBody TrainingPlanRequest request) {
     TrainingPlan plan = new TrainingPlan(
         null,
         request.name(),

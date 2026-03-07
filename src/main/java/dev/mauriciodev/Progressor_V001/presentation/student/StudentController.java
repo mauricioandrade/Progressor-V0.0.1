@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,7 +39,7 @@ public class StudentController {
       @ApiResponse(responseCode = "201", description = "Student created successfully"),
       @ApiResponse(responseCode = "400", description = "Invalid request data")
   })
-  public ResponseEntity<StudentResponse> register(@RequestBody StudentRequest request) {
+  public ResponseEntity<StudentResponse> register(@Valid @RequestBody StudentRequest request) {
     Student student = new Student(
         null,
         request.name(),

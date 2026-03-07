@@ -1,11 +1,13 @@
 package dev.mauriciodev.Progressor_V001.application.trainer;
 
+import jakarta.validation.constraints.NotBlank;
+
 public record TrainerRequest(
-    String name,
-    String email,
+    @NotBlank String name,
+    @NotBlank String email,
     String phone,
-    String cref,
-    String specialty
+    @NotBlank String cref,
+    @NotBlank String specialty
 ) {
 
 }
