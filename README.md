@@ -3,8 +3,8 @@
 <img src="https://img.shields.io/badge/Java-25-orange?style=for-the-badge&logo=openjdk&logoColor=white"/>
 <img src="https://img.shields.io/badge/Spring%20Boot-4.0.3-brightgreen?style=for-the-badge&logo=springboot&logoColor=white"/>
 <img src="https://img.shields.io/badge/PostgreSQL-Docker-blue?style=for-the-badge&logo=postgresql&logoColor=white"/>
+<img src="https://img.shields.io/badge/Spring%20Security-JWT-yellow?style=for-the-badge&logo=springsecurity&logoColor=white"/>
 <img src="https://img.shields.io/badge/Maven-C71A36?style=for-the-badge&logo=apachemaven&logoColor=white"/>
-<img src="https://img.shields.io/badge/Actuator-enabled-brightgreen?style=for-the-badge&logo=springboot&logoColor=white"/>
 
 <br/><br/>
 
@@ -18,9 +18,9 @@
 
 ## 📌 About the Project
 
-**Progressor** is a gym student management system focused on **evolution**. The platform tracks students, personal trainers, and training plans — automatically evolving each student's level and assigned plan as they progress over time.
+**Progressor** is a gym management system focused on **evolution**. Students and personal trainers can register, track measurements, manage training plans, and monitor physical progress over time.
 
-> The system grows with the student. From beginner to advanced, every step is tracked.
+> Optional trainer. Maximum autonomy. Every step tracked.
 
 ---
 
@@ -32,10 +32,50 @@
 | Spring Boot | 4.0.3 | Application framework |
 | Spring Web | — | REST API |
 | Spring Data JPA | — | Database persistence |
+| Spring Security | 7.x | Authentication and authorization |
+| JJWT | 0.12.6 | JWT token generation and validation |
 | Spring Actuator | — | Health check and monitoring |
+| SpringDoc OpenAPI | — | Swagger documentation |
 | PostgreSQL | 18 | Relational database |
 | Docker | — | Local database container |
 | Maven | — | Dependency management |
+
+---
+
+## 🏗️ Architecture
+
+The project follows **Clean Architecture** organized into four layers:
+
+```
+dev.mauriciodev.Progressor_V001/
+│
+├── domain/                        → Business entities and rules
+│   ├── person/                    → Person (base class)
+│   ├── student/                   → Student entity + exceptions
+│   ├── trainer/                   → PersonalTrainer entity + exceptions
+│   ├── training/                  → TrainingPlan entity + exceptions
+│   ├── shared/                    → Goal, TrainingLevel, Progressable
+│   └── user/                      → User (auth entity), Role
+│
+├── application/                   → Use cases, services, DTOs, mappers
+│   ├── auth/                      → AuthService, RegisterRequest, LoginRequest, AuthResponse
+│   ├── student/                   → StudentService, StudentRequest/Response, StudentMapper
+│   ├── trainer/                   → PersonalTrainerService, TrainerRequest/Response, TrainerMapper
+│   └── training/                  → TrainingPlanService, TrainingPlanRequest/Response, TrainingPlanMapper
+│
+├── infrastructure/                → Frameworks and external integrations
+│   ├── persistence/               → JPA Repositories
+│   ├── security/                  → JWT filter, SecurityConfig, UserDetailsServiceImpl
+│   └── openapi/                   → Swagger/OpenAPI configuration
+│
+└── presentation/                  → REST controllers and exception handlers
+    ├── auth/                      → AuthController
+    ├── student/                   → StudentController
+    ├── trainer/                   → PersonalTrainerController
+    ├── training/                  → TrainingPlanController
+    ├── exception/                 → GlobalExceptionHandler
+    └── UserController             → /api/users/me
+```
 
 ---
 
@@ -64,9 +104,9 @@ docker compose up -d
 mvn spring-boot:run
 ```
 
-**4. Access the API**
+**4. Access the API documentation**
 ```
-http://localhost:8080
+http://localhost:8080/swagger-ui/index.html
 ```
 
 **5. Check application health**
@@ -78,49 +118,45 @@ GET http://localhost:8080/actuator/health
 
 ## 🌐 API Endpoints
 
+### Authentication
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| `POST` | `/auth/register` | ❌ | Register a new user |
+| `POST` | `/auth/login` | ❌ | Login and receive JWT token |
+
 ### Students
-| Method | Endpoint | Description |
-|---|---|---|
-| `POST` | `/students` | Register a new student |
-| `GET` | `/students` | List all students |
-| `GET` | `/students/{id}` | Find student by ID |
-| `PATCH` | `/students/{id}/progress` | Trigger student progression |
-| `GET` | `/students/{id}/history` | Get training plan history |
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| `POST` | `/students` | ✅ | Register a new student |
+| `GET` | `/students` | ✅ | List all students |
+| `GET` | `/students/{id}` | ✅ | Find student by ID |
+| `PATCH` | `/students/{id}/progress` | ✅ | Trigger student level progression |
+| `GET` | `/students/{id}/history` | ✅ | Get training plan history |
 
 ### Personal Trainers
-| Method | Endpoint | Description |
-|---|---|---|
-| `POST` | `/trainers` | Register a new trainer |
-| `GET` | `/trainers` | List all trainers |
-| `GET` | `/trainers/{id}` | Find trainer by ID |
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| `POST` | `/trainers` | ✅ | Register a new trainer |
+| `GET` | `/trainers` | ✅ | List all trainers |
+| `GET` | `/trainers/{id}` | ✅ | Find trainer by ID |
 
 ### Training Plans
-| Method | Endpoint | Description |
-|---|---|---|
-| `POST` | `/training-plans` | Create a new plan |
-| `GET` | `/training-plans` | List all plans |
-| `POST` | `/training-plans/{id}/assign/{studentId}` | Assign plan to student |
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| `POST` | `/training-plans` | ✅ | Create a new training plan |
+| `GET` | `/training-plans` | ✅ | List all training plans |
+| `GET` | `/training-plans/{id}` | ✅ | Find training plan by ID |
+| `POST` | `/training-plans/{id}/assign/{studentId}` | ✅ | Assign plan to student |
+
+### User Profile
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| `GET` | `/api/users/me` | ✅ | Get authenticated user info |
 
 ### Monitoring
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/actuator/health` | Application health check |
-| `GET` | `/actuator/info` | Application info |
-
----
-
-## 🗂️ Package Structure
-
-```
-com.progressor
-├── controller        → REST endpoints
-├── service           → Business logic
-├── repository        → Database access (JPA)
-└── domain
-    ├── entity        → JPA entities (Person, Student, PersonalTrainer, TrainingPlan)
-    ├── enums         → TrainingLevel, Goal
-    └── interfaces    → Progressable
-```
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| `GET` | `/actuator/health` | ❌ | Application health check |
 
 ---
 
@@ -134,13 +170,18 @@ com.progressor
 - [x] 🩺 **M6** — Health Check (Spring Actuator)
 - [x] 📦 **M7** — Docker Complete (Dockerfile and full docker-compose)
 - [x] 📖 **M8** — API Documentation (Swagger / OpenAPI)
-- [ ] 🔐 **M9** — Authentication (Spring Security)
+- [x] 🔐 **M9** — Authentication (Spring Security + JWT)
+- [x] ♻️ **M10** — Refactor: Clean Architecture Migration
+- [ ] 🔗 **M11** — Auth: User–Domain Binding (User ↔ Student / Trainer)
+- [ ] 🎓 **M12** — Student Module (self-service endpoints)
+- [ ] 🏋️ **M13** — Personal Trainer Module (profile + student supervision)
+- [ ] 📋 **M14** — Training Plans Module (role-based access + self-service)
+- [ ] 📏 **M15** — Measurements Module (body tracking for students and trainers)
+- [ ] 🎨 **M16** — Frontend (React + Vite)
 
 ---
 
 ## 🤝 How to Contribute
-
-We welcome contributions! Follow the steps below to avoid conflicts and keep things organized.
 
 ### 1. Fork the repository
 Click the **Fork** button at the top right of this page.
@@ -162,10 +203,8 @@ git remote add upstream https://github.com/mauricioandrade/Progressor-V0.0.1.git
 - Comment: **"I'd like to work on this"**
 - Wait for it to be assigned to you
 
-### 5. Create a branch from develop
+### 5. Create a branch
 ```bash
-git checkout develop
-git pull upstream develop
 git checkout -b feature/issue-XX-short-description
 ```
 
@@ -179,16 +218,7 @@ git commit -m "feat(scope): short description"
 git push origin feature/issue-XX-short-description
 ```
 
-Open a **Pull Request** targeting the `develop` branch — **not** `main`.
-
-### 8. Stay in sync to avoid conflicts
-Before opening your PR, always sync with upstream:
-```bash
-git fetch upstream
-git rebase upstream/develop
-```
-
-Resolve any conflicts locally before pushing.
+Open a **Pull Request** targeting the `main` branch.
 
 ---
 
@@ -225,9 +255,9 @@ Resolve any conflicts locally before pushing.
 
 ## 📌 Sobre o Projeto
 
-**Progressor** é um sistema de gerenciamento de alunos de academia com foco em **evolução**. A plataforma acompanha alunos, personal trainers e planos de treino — evoluindo automaticamente o nível e o plano de cada aluno conforme ele progride ao longo do tempo.
+**Progressor** é um sistema de gerenciamento de academia com foco em **evolução**. Alunos e personal trainers podem se cadastrar, registrar medidas, gerenciar planos de treino e acompanhar a evolução física ao longo do tempo.
 
-> O sistema cresce junto com o aluno. Do iniciante ao avançado, cada etapa é registrada.
+> Personal opcional. Autonomia máxima. Cada etapa registrada.
 
 ---
 
@@ -239,10 +269,50 @@ Resolve any conflicts locally before pushing.
 | Spring Boot | 4.0.3 | Framework da aplicação |
 | Spring Web | — | API REST |
 | Spring Data JPA | — | Persistência de dados |
+| Spring Security | 7.x | Autenticação e autorização |
+| JJWT | 0.12.6 | Geração e validação de tokens JWT |
 | Spring Actuator | — | Health check e monitoramento |
+| SpringDoc OpenAPI | — | Documentação Swagger |
 | PostgreSQL | 18 | Banco de dados relacional |
 | Docker | — | Container do banco local |
 | Maven | — | Gerenciamento de dependências |
+
+---
+
+## 🏗️ Arquitetura
+
+O projeto segue **Clean Architecture** organizada em quatro camadas:
+
+```
+dev.mauriciodev.Progressor_V001/
+│
+├── domain/                        → Entidades e regras de negócio
+│   ├── person/                    → Person (classe base)
+│   ├── student/                   → Entidade Student + exceções
+│   ├── trainer/                   → Entidade PersonalTrainer + exceções
+│   ├── training/                  → Entidade TrainingPlan + exceções
+│   ├── shared/                    → Goal, TrainingLevel, Progressable
+│   └── user/                      → User (entidade de auth), Role
+│
+├── application/                   → Casos de uso, services, DTOs, mappers
+│   ├── auth/                      → AuthService, RegisterRequest, LoginRequest, AuthResponse
+│   ├── student/                   → StudentService, StudentRequest/Response, StudentMapper
+│   ├── trainer/                   → PersonalTrainerService, TrainerRequest/Response, TrainerMapper
+│   └── training/                  → TrainingPlanService, TrainingPlanRequest/Response, TrainingPlanMapper
+│
+├── infrastructure/                → Frameworks e integrações externas
+│   ├── persistence/               → Repositórios JPA
+│   ├── security/                  → Filtro JWT, SecurityConfig, UserDetailsServiceImpl
+│   └── openapi/                   → Configuração Swagger/OpenAPI
+│
+└── presentation/                  → Controllers REST e tratamento de exceções
+    ├── auth/                      → AuthController
+    ├── student/                   → StudentController
+    ├── trainer/                   → PersonalTrainerController
+    ├── training/                  → TrainingPlanController
+    ├── exception/                 → GlobalExceptionHandler
+    └── UserController             → /api/users/me
+```
 
 ---
 
@@ -271,9 +341,9 @@ docker compose up -d
 mvn spring-boot:run
 ```
 
-**4. Acesse a API**
+**4. Acesse a documentação da API**
 ```
-http://localhost:8080
+http://localhost:8080/swagger-ui/index.html
 ```
 
 **5. Verifique a saúde da aplicação**
@@ -285,49 +355,45 @@ GET http://localhost:8080/actuator/health
 
 ## 🌐 Endpoints da API
 
+### Autenticação
+| Método | Endpoint | Auth | Descrição |
+|---|---|---|---|
+| `POST` | `/auth/register` | ❌ | Registrar novo usuário |
+| `POST` | `/auth/login` | ❌ | Login e recebimento do token JWT |
+
 ### Alunos
-| Método | Endpoint | Descrição |
-|---|---|---|
-| `POST` | `/students` | Cadastrar novo aluno |
-| `GET` | `/students` | Listar todos os alunos |
-| `GET` | `/students/{id}` | Buscar aluno por ID |
-| `PATCH` | `/students/{id}/progress` | Disparar progressão do aluno |
-| `GET` | `/students/{id}/history` | Histórico de planos de treino |
+| Método | Endpoint | Auth | Descrição |
+|---|---|---|---|
+| `POST` | `/students` | ✅ | Cadastrar novo aluno |
+| `GET` | `/students` | ✅ | Listar todos os alunos |
+| `GET` | `/students/{id}` | ✅ | Buscar aluno por ID |
+| `PATCH` | `/students/{id}/progress` | ✅ | Disparar progressão do aluno |
+| `GET` | `/students/{id}/history` | ✅ | Histórico de planos de treino |
 
 ### Personal Trainers
-| Método | Endpoint | Descrição |
-|---|---|---|
-| `POST` | `/trainers` | Cadastrar novo personal |
-| `GET` | `/trainers` | Listar todos os personais |
-| `GET` | `/trainers/{id}` | Buscar personal por ID |
+| Método | Endpoint | Auth | Descrição |
+|---|---|---|---|
+| `POST` | `/trainers` | ✅ | Cadastrar novo personal |
+| `GET` | `/trainers` | ✅ | Listar todos os personais |
+| `GET` | `/trainers/{id}` | ✅ | Buscar personal por ID |
 
 ### Planos de Treino
-| Método | Endpoint | Descrição |
-|---|---|---|
-| `POST` | `/training-plans` | Criar novo plano |
-| `GET` | `/training-plans` | Listar todos os planos |
-| `POST` | `/training-plans/{id}/assign/{studentId}` | Atribuir plano ao aluno |
+| Método | Endpoint | Auth | Descrição |
+|---|---|---|---|
+| `POST` | `/training-plans` | ✅ | Criar novo plano de treino |
+| `GET` | `/training-plans` | ✅ | Listar todos os planos |
+| `GET` | `/training-plans/{id}` | ✅ | Buscar plano por ID |
+| `POST` | `/training-plans/{id}/assign/{studentId}` | ✅ | Atribuir plano ao aluno |
+
+### Perfil do Usuário
+| Método | Endpoint | Auth | Descrição |
+|---|---|---|---|
+| `GET` | `/api/users/me` | ✅ | Retornar dados do usuário autenticado |
 
 ### Monitoramento
-| Método | Endpoint | Descrição |
-|---|---|---|
-| `GET` | `/actuator/health` | Health check da aplicação |
-| `GET` | `/actuator/info` | Informações da aplicação |
-
----
-
-## 🗂️ Estrutura de Pacotes
-
-```
-com.progressor
-├── controller        → Endpoints REST
-├── service           → Regras de negócio
-├── repository        → Acesso ao banco (JPA)
-└── domain
-    ├── entity        → Entidades JPA (Person, Student, PersonalTrainer, TrainingPlan)
-    ├── enums         → TrainingLevel, Goal
-    └── interfaces    → Progressable
-```
+| Método | Endpoint | Auth | Descrição |
+|---|---|---|---|
+| `GET` | `/actuator/health` | ❌ | Health check da aplicação |
 
 ---
 
@@ -341,13 +407,18 @@ com.progressor
 - [x] 🩺 **M6** — Health Check (Spring Actuator)
 - [x] 📦 **M7** — Docker Complete (Dockerfile e docker-compose completo)
 - [x] 📖 **M8** — API Documentation (Swagger / OpenAPI)
-- [ ] 🔐 **M9** — Authentication (Spring Security)
+- [x] 🔐 **M9** — Authentication (Spring Security + JWT)
+- [x] ♻️ **M10** — Refactor: Clean Architecture Migration
+- [ ] 🔗 **M11** — Auth: User–Domain Binding (User ↔ Student / Trainer)
+- [ ] 🎓 **M12** — Student Module (endpoints de auto-serviço)
+- [ ] 🏋️ **M13** — Personal Trainer Module (perfil + supervisão de alunos)
+- [ ] 📋 **M14** — Training Plans Module (controle por role + auto-serviço)
+- [ ] 📏 **M15** — Measurements Module (registro de medidas corporais)
+- [ ] 🎨 **M16** — Frontend (React + Vite)
 
 ---
 
 ## 🤝 Como Contribuir
-
-Contribuições são bem-vindas! Siga os passos abaixo para evitar conflitos e manter o projeto organizado.
 
 ### 1. Faça um Fork do repositório
 Clique no botão **Fork** no canto superior direito desta página.
@@ -369,10 +440,8 @@ git remote add upstream https://github.com/mauricioandrade/Progressor-V0.0.1.git
 - Comente: **"Gostaria de trabalhar nessa issue"**
 - Aguarde ser atribuída a você
 
-### 5. Crie uma branch a partir da develop
+### 5. Crie uma branch
 ```bash
-git checkout develop
-git pull upstream develop
 git checkout -b feature/issue-XX-descricao-curta
 ```
 
@@ -386,16 +455,7 @@ git commit -m "feat(escopo): descrição curta em inglês"
 git push origin feature/issue-XX-descricao-curta
 ```
 
-Abra um **Pull Request** apontando para a branch `develop` — **não** para a `main`.
-
-### 8. Evite conflitos
-Antes de abrir o PR, sincronize com o upstream:
-```bash
-git fetch upstream
-git rebase upstream/develop
-```
-
-Resolva qualquer conflito localmente antes de subir.
+Abra um **Pull Request** apontando para a branch `main`.
 
 ---
 
@@ -417,8 +477,5 @@ Resolva qualquer conflito localmente antes de subir.
 ---
 
 <div align="center">
-  <sub>Built with 💪 by <a href="https://github.com/mauricioandrade">mauricioandrade</a> and contributors</sub>
+  <sub>Built with 💪 by <a href="https://github.com/mauricioandrade">mauricioandrade</a></sub>
 </div>
-
- 
- 
