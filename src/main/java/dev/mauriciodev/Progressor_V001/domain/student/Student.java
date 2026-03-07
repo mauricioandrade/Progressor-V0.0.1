@@ -5,14 +5,17 @@ import dev.mauriciodev.Progressor_V001.domain.training.TrainingPlan;
 import dev.mauriciodev.Progressor_V001.domain.shared.Goal;
 import dev.mauriciodev.Progressor_V001.domain.shared.TrainingLevel;
 import dev.mauriciodev.Progressor_V001.domain.shared.Progressable;
+import dev.mauriciodev.Progressor_V001.domain.user.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,13 +24,14 @@ import java.util.List;
 @Table(name = "students")
 public class Student extends Person implements Progressable {
 
-  @Column(nullable = false)
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "user_id", unique = true)
+  private User user;
+
   private Integer age;
 
-  @Column(nullable = false)
   private Double weight;
 
-  @Column(nullable = false)
   private Double height;
 
   @Enumerated(EnumType.STRING)
@@ -43,9 +47,7 @@ public class Student extends Person implements Progressable {
   private TrainingPlan currentTrainingPlan;
 
   @OneToMany
-  @JoinTable(name = "student_training_history",
-      joinColumns = @JoinColumn(name = "student_id"),
-      inverseJoinColumns = @JoinColumn(name = "training_plan_id"))
+  @JoinTable(name = "student_training_history", joinColumns = @JoinColumn(name = "student_id"), inverseJoinColumns = @JoinColumn(name = "training_plan_id"))
   private List<TrainingPlan> trainingHistory = new ArrayList<>();
 
   protected Student() {
@@ -74,6 +76,14 @@ public class Student extends Person implements Progressable {
   @Override
   public String evaluateProgress() {
     return "Student " + getName() + " is currently at level: " + trainingLevel;
+  }
+
+  public User getUser() {
+    return user;
+  }
+
+  public void setUser(User user) {
+    this.user = user;
   }
 
   public Integer getAge() {
