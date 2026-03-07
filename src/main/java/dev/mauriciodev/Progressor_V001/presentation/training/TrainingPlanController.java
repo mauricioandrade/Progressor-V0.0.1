@@ -1,11 +1,13 @@
 package dev.mauriciodev.Progressor_V001.presentation.training;
 
-import dev.mauriciodev.Progressor_V001.domain.student.Student;
-import dev.mauriciodev.Progressor_V001.domain.training.TrainingPlan;
-import dev.mauriciodev.Progressor_V001.application.training.TrainingPlanRequest;
+import dev.mauriciodev.Progressor_V001.application.student.StudentMapper;
 import dev.mauriciodev.Progressor_V001.application.student.StudentResponse;
+import dev.mauriciodev.Progressor_V001.application.training.TrainingPlanMapper;
+import dev.mauriciodev.Progressor_V001.application.training.TrainingPlanRequest;
 import dev.mauriciodev.Progressor_V001.application.training.TrainingPlanResponse;
 import dev.mauriciodev.Progressor_V001.application.training.TrainingPlanService;
+import dev.mauriciodev.Progressor_V001.domain.student.Student;
+import dev.mauriciodev.Progressor_V001.domain.training.TrainingPlan;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -47,7 +49,7 @@ public class TrainingPlanController {
         request.exercises()
     );
     TrainingPlan saved = trainingPlanService.create(plan);
-    return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(saved));
+    return ResponseEntity.status(HttpStatus.CREATED).body(TrainingPlanMapper.toResponse(saved));
   }
 
   @GetMapping
@@ -56,7 +58,7 @@ public class TrainingPlanController {
   public ResponseEntity<List<TrainingPlanResponse>> findAll() {
     List<TrainingPlanResponse> response = trainingPlanService.findAll()
         .stream()
-        .map(this::toResponse)
+        .map(TrainingPlanMapper::toResponse)
         .toList();
     return ResponseEntity.ok(response);
   }
@@ -68,7 +70,7 @@ public class TrainingPlanController {
       @ApiResponse(responseCode = "404", description = "Training plan not found")
   })
   public ResponseEntity<TrainingPlanResponse> findById(@PathVariable Long id) {
-    return ResponseEntity.ok(toResponse(trainingPlanService.findById(id)));
+    return ResponseEntity.ok(TrainingPlanMapper.toResponse(trainingPlanService.findById(id)));
   }
 
   @PostMapping("/{id}/assign/{studentId}")
@@ -82,27 +84,6 @@ public class TrainingPlanController {
       @PathVariable Long id,
       @PathVariable Long studentId) {
     Student student = trainingPlanService.assignToStudent(id, studentId);
-    return ResponseEntity.ok(new StudentResponse(
-        student.getId(),
-        student.getName(),
-        student.getEmail(),
-        student.getPhone(),
-        student.getAge(),
-        student.getWeight(),
-        student.getHeight(),
-        student.getGoal(),
-        student.getTrainingLevel(),
-        student.getCurrentTrainingPlan().getName()
-    ));
-  }
-
-  private TrainingPlanResponse toResponse(TrainingPlan plan) {
-    return new TrainingPlanResponse(
-        plan.getId(),
-        plan.getName(),
-        plan.getDurationWeeks(),
-        plan.getLevel(),
-        plan.getExercises()
-    );
+    return ResponseEntity.ok(StudentMapper.toResponse(student));
   }
 }

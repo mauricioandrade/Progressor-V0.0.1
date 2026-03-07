@@ -1,15 +1,16 @@
 package dev.mauriciodev.Progressor_V001.presentation.student;
 
-import dev.mauriciodev.Progressor_V001.domain.student.Student;
+import dev.mauriciodev.Progressor_V001.application.student.StudentMapper;
 import dev.mauriciodev.Progressor_V001.application.student.StudentRequest;
 import dev.mauriciodev.Progressor_V001.application.student.StudentResponse;
-import dev.mauriciodev.Progressor_V001.application.training.TrainingPlanResponse;
 import dev.mauriciodev.Progressor_V001.application.student.StudentService;
+import dev.mauriciodev.Progressor_V001.application.training.TrainingPlanMapper;
+import dev.mauriciodev.Progressor_V001.application.training.TrainingPlanResponse;
+import dev.mauriciodev.Progressor_V001.domain.student.Student;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -52,7 +53,7 @@ public class StudentController {
         request.trainingLevel()
     );
     Student saved = studentService.register(student);
-    return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(saved));
+    return ResponseEntity.status(HttpStatus.CREATED).body(StudentMapper.toResponse(saved));
   }
 
   @GetMapping
@@ -61,7 +62,7 @@ public class StudentController {
   public ResponseEntity<List<StudentResponse>> findAll() {
     List<StudentResponse> response = studentService.findAll()
         .stream()
-        .map(this::toResponse)
+        .map(StudentMapper::toResponse)
         .toList();
     return ResponseEntity.ok(response);
   }
@@ -73,7 +74,7 @@ public class StudentController {
       @ApiResponse(responseCode = "404", description = "Student not found")
   })
   public ResponseEntity<StudentResponse> findById(@PathVariable Long id) {
-    return ResponseEntity.ok(toResponse(studentService.findById(id)));
+    return ResponseEntity.ok(StudentMapper.toResponse(studentService.findById(id)));
   }
 
   @PatchMapping("/{id}/progress")
@@ -87,13 +88,12 @@ public class StudentController {
   public ResponseEntity<StudentResponse> progress(@PathVariable Long id) {
     try {
       Student student = studentService.progress(id);
-      return ResponseEntity.ok(toResponse(student));
+      return ResponseEntity.ok(StudentMapper.toResponse(student));
     } catch (IllegalStateException e) {
       return ResponseEntity.badRequest().build();
     }
   }
 
-  @Transactional
   @GetMapping("/{id}/history")
   @Operation(summary = "Get training history",
       description = "Returns all training plans the student has been assigned to")
@@ -105,31 +105,8 @@ public class StudentController {
     Student student = studentService.findById(id);
     List<TrainingPlanResponse> history = student.getTrainingHistory()
         .stream()
-        .map(plan -> new TrainingPlanResponse(
-            plan.getId(),
-            plan.getName(),
-            plan.getDurationWeeks(),
-            plan.getLevel(),
-            plan.getExercises()
-        ))
+        .map(TrainingPlanMapper::toResponse)
         .toList();
     return ResponseEntity.ok(history);
-  }
-
-  private StudentResponse toResponse(Student student) {
-    return new StudentResponse(
-        student.getId(),
-        student.getName(),
-        student.getEmail(),
-        student.getPhone(),
-        student.getAge(),
-        student.getWeight(),
-        student.getHeight(),
-        student.getGoal(),
-        student.getTrainingLevel(),
-        student.getCurrentTrainingPlan() != null
-            ? student.getCurrentTrainingPlan().getName()
-            : null
-    );
   }
 }

@@ -1,9 +1,10 @@
 package dev.mauriciodev.Progressor_V001.presentation.trainer;
 
-import dev.mauriciodev.Progressor_V001.domain.trainer.PersonalTrainer;
+import dev.mauriciodev.Progressor_V001.application.trainer.PersonalTrainerService;
+import dev.mauriciodev.Progressor_V001.application.trainer.TrainerMapper;
 import dev.mauriciodev.Progressor_V001.application.trainer.TrainerRequest;
 import dev.mauriciodev.Progressor_V001.application.trainer.TrainerResponse;
-import dev.mauriciodev.Progressor_V001.application.trainer.PersonalTrainerService;
+import dev.mauriciodev.Progressor_V001.domain.trainer.PersonalTrainer;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -47,7 +48,7 @@ public class PersonalTrainerController {
         request.specialty()
     );
     PersonalTrainer saved = personalTrainerService.register(trainer);
-    return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(saved));
+    return ResponseEntity.status(HttpStatus.CREATED).body(TrainerMapper.toResponse(saved));
   }
 
   @GetMapping
@@ -56,7 +57,7 @@ public class PersonalTrainerController {
   public ResponseEntity<List<TrainerResponse>> findAll() {
     List<TrainerResponse> response = personalTrainerService.findAll()
         .stream()
-        .map(this::toResponse)
+        .map(TrainerMapper::toResponse)
         .toList();
     return ResponseEntity.ok(response);
   }
@@ -68,17 +69,6 @@ public class PersonalTrainerController {
       @ApiResponse(responseCode = "404", description = "Trainer not found")
   })
   public ResponseEntity<TrainerResponse> findById(@PathVariable Long id) {
-    return ResponseEntity.ok(toResponse(personalTrainerService.findById(id)));
-  }
-
-  private TrainerResponse toResponse(PersonalTrainer trainer) {
-    return new TrainerResponse(
-        trainer.getId(),
-        trainer.getName(),
-        trainer.getEmail(),
-        trainer.getPhone(),
-        trainer.getCref(),
-        trainer.getSpecialty()
-    );
+    return ResponseEntity.ok(TrainerMapper.toResponse(personalTrainerService.findById(id)));
   }
 }
