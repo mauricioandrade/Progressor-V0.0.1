@@ -55,6 +55,12 @@ public class Student extends Person implements Progressable {
   @JoinColumn(name = "trainer_id")
   private PersonalTrainer trainer;
 
+  @Column(name = "avatar_data", columnDefinition = "BYTEA")
+  private byte[] avatarData;
+
+  @Column(name = "avatar_content_type", length = 50)
+  private String avatarContentType;
+
   protected Student() {
     super(null, null, null, null);
   }
@@ -83,71 +89,35 @@ public class Student extends Person implements Progressable {
     return "Student " + getName() + " is currently at level: " + trainingLevel;
   }
 
-  public User getUser() {
-    return user;
-  }
+  public User getUser()                        { return user; }
+  public void setUser(User user)               { this.user = user; }
 
-  public void setUser(User user) {
-    this.user = user;
-  }
+  public Integer getAge()                      { return age; }
+  public void setAge(Integer age)              { this.age = age; }
 
-  public Integer getAge() {
-    return age;
-  }
+  public Double getWeight()                    { return weight; }
+  public void setWeight(Double weight)         { this.weight = weight; }
 
-  public Double getWeight() {
-    return weight;
-  }
+  public Double getHeight()                    { return height; }
+  public void setHeight(Double height)         { this.height = height; }
 
-  public Double getHeight() {
-    return height;
-  }
+  public Goal getGoal()                        { return goal; }
+  public void setGoal(Goal goal)               { this.goal = goal; }
 
-  public Goal getGoal() {
-    return goal;
-  }
+  public TrainingLevel getTrainingLevel()      { return trainingLevel; }
 
-  public PersonalTrainer getTrainer() {
-    return trainer;
-  }
+  public PersonalTrainer getTrainer()          { return trainer; }
+  public void setTrainer(PersonalTrainer t)    { this.trainer = t; }
 
-  public void setTrainer(PersonalTrainer trainer) {
-    this.trainer = trainer;
-  }
+  public TrainingPlan getCurrentTrainingPlan()              { return currentTrainingPlan; }
+  public void setCurrentTrainingPlan(TrainingPlan plan)     { this.currentTrainingPlan = plan; }
 
-  public void setAge(Integer age) {
-    this.age = age;
-  }
+  public List<TrainingPlan> getTrainingHistory()            { return trainingHistory; }
+  public void addToHistory(TrainingPlan plan)               { this.trainingHistory.add(plan); }
 
-  public void setWeight(Double weight) {
-    this.weight = weight;
-  }
+  public byte[] getAvatarData()                             { return avatarData; }
+  public void setAvatarData(byte[] avatarData)              { this.avatarData = avatarData; }
 
-  public void setHeight(Double height) {
-    this.height = height;
-  }
-
-  public void setGoal(Goal goal) {
-    this.goal = goal;
-  }
-
-  public TrainingLevel getTrainingLevel() {
-    return trainingLevel;
-  }
-
-  public TrainingPlan getCurrentTrainingPlan() {
-    return currentTrainingPlan;
-  }
-
-  public void setCurrentTrainingPlan(TrainingPlan currentTrainingPlan) {
-    this.currentTrainingPlan = currentTrainingPlan;
-  }
-
-  public List<TrainingPlan> getTrainingHistory() {
-    return trainingHistory;
-  }
-
-  public void addToHistory(TrainingPlan plan) {
-    this.trainingHistory.add(plan);
-  }
+  public String getAvatarContentType()                      { return avatarContentType; }
+  public void setAvatarContentType(String avatarContentType){ this.avatarContentType = avatarContentType; }
 }
