@@ -32,29 +32,39 @@ public class Measurement {
   private Double heightCm;
   private Double bodyFatPercent;
   private Double muscleMassPercent;
-  private Double waistCm;
-  private Double hipCm;
+  private Double rightBicepsCm;
+  private Double leftBicepsCm;
   private Double chestCm;
-  private Double armCm;
-  private Double thighCm;
+  private Double abdomenCm;
+  private Double hipCm;
+  private Double rightThighCm;
+  private Double leftThighCm;
+  private Double rightCalfCm;
+  private Double leftCalfCm;
 
-  protected Measurement() {
+  public Measurement() {
   }
 
-  public Measurement(Student student, LocalDateTime recordedAt, Double weightKg, Double heightCm,
-      Double bodyFatPercent, Double muscleMassPercent, Double waistCm, Double hipCm, Double chestCm,
-      Double armCm, Double thighCm) {
+  public Measurement(UUID id, Student student, LocalDateTime recordedAt, Double weightKg,
+      Double heightCm, Double bodyFatPercent, Double muscleMassPercent, Double rightBicepsCm,
+      Double leftBicepsCm, Double chestCm, Double abdomenCm, Double hipCm, Double rightThighCm,
+      Double leftThighCm, Double rightCalfCm, Double leftCalfCm) {
+    this.id = id;
     this.student = student;
     this.recordedAt = recordedAt;
     this.weightKg = weightKg;
     this.heightCm = heightCm;
     this.bodyFatPercent = bodyFatPercent;
     this.muscleMassPercent = muscleMassPercent;
-    this.waistCm = waistCm;
-    this.hipCm = hipCm;
+    this.rightBicepsCm = rightBicepsCm;
+    this.leftBicepsCm = leftBicepsCm;
     this.chestCm = chestCm;
-    this.armCm = armCm;
-    this.thighCm = thighCm;
+    this.abdomenCm = abdomenCm;
+    this.hipCm = hipCm;
+    this.rightThighCm = rightThighCm;
+    this.leftThighCm = leftThighCm;
+    this.rightCalfCm = rightCalfCm;
+    this.leftCalfCm = leftCalfCm;
   }
 
   public UUID getId() {
@@ -85,23 +95,39 @@ public class Measurement {
     return muscleMassPercent;
   }
 
-  public Double getWaistCm() {
-    return waistCm;
+  public Double getRightBicepsCm() {
+    return rightBicepsCm;
   }
 
-  public Double getHipCm() {
-    return hipCm;
+  public Double getLeftBicepsCm() {
+    return leftBicepsCm;
   }
 
   public Double getChestCm() {
     return chestCm;
   }
 
-  public Double getArmCm() {
-    return armCm;
+  public Double getAbdomenCm() {
+    return abdomenCm;
   }
 
-  public Double getThighCm() {
-    return thighCm;
+  public Double getHipCm() {
+    return hipCm;
+  }
+
+  public Double getRightThighCm() {
+    return rightThighCm;
+  }
+
+  public Double getLeftThighCm() {
+    return leftThighCm;
+  }
+
+  public Double getRightCalfCm() {
+    return rightCalfCm;
+  }
+
+  public Double getLeftCalfCm() {
+    return leftCalfCm;
   }
 }

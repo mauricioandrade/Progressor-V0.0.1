@@ -5,11 +5,11 @@ import dev.mauriciodev.Progressor_V001.domain.student.Student;
 import dev.mauriciodev.Progressor_V001.domain.student.StudentNotFoundException;
 import dev.mauriciodev.Progressor_V001.infrastructure.persistence.MeasurementRepository;
 import dev.mauriciodev.Progressor_V001.infrastructure.persistence.StudentRepository;
-import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class MeasurementService {
@@ -28,12 +28,12 @@ public class MeasurementService {
     Student student = studentRepository.findByUserId(userId)
         .orElseThrow(() -> new StudentNotFoundException(userId));
 
-    LocalDateTime recordedAt =
-        request.recordedAt() != null ? request.recordedAt() : LocalDateTime.now();
+    Measurement measurement = new Measurement(null, student, LocalDateTime.now(),
+        request.weightKg(), request.heightCm(), request.bodyFatPercent(),
+        request.muscleMassPercent(), request.rightBicepsCm(), request.leftBicepsCm(),
+        request.chestCm(), request.abdomenCm(), request.hipCm(), request.rightThighCm(),
+        request.leftThighCm(), request.rightCalfCm(), request.leftCalfCm());
 
-    Measurement measurement = new Measurement(student, recordedAt, request.weightKg(),
-        request.heightCm(), request.bodyFatPercent(), request.muscleMassPercent(),
-        request.waistCm(), request.hipCm(), request.chestCm(), request.armCm(), request.thighCm());
     return measurementRepository.save(measurement);
   }
 
@@ -48,27 +48,34 @@ public class MeasurementService {
   }
 
   public MeasurementEvolutionResponse getEvolution(UUID userId) {
-    List<Measurement> measurements = findAllForStudent(userId);
-    if (measurements.size() < 2) {
-      throw new IllegalStateException("Not enough measurements to calculate evolution.");
+    List<Measurement> list = findAllForStudent(userId);
+
+    if (list.size() < 2) {
+      throw new IllegalStateException(
+          "At least 2 measurements are required to calculate evolution.");
     }
 
-    Measurement first = measurements.getFirst();
-    Measurement last = measurements.getLast();
+    Measurement first = list.get(0);
+    Measurement last = list.get(list.size() - 1);
 
     return new MeasurementEvolutionResponse(MeasurementMapper.toResponse(first),
-        MeasurementMapper.toResponse(last), delta(first.getWeightKg(), last.getWeightKg()),
-        delta(first.getBodyFatPercent(), last.getBodyFatPercent()),
-        delta(first.getMuscleMassPercent(), last.getMuscleMassPercent()),
-        delta(first.getWaistCm(), last.getWaistCm()), delta(first.getHipCm(), last.getHipCm()),
-        delta(first.getChestCm(), last.getChestCm()), delta(first.getArmCm(), last.getArmCm()),
-        delta(first.getThighCm(), last.getThighCm()));
+        MeasurementMapper.toResponse(last), delta(last.getWeightKg(), first.getWeightKg()),
+        delta(last.getBodyFatPercent(), first.getBodyFatPercent()),
+        delta(last.getMuscleMassPercent(), first.getMuscleMassPercent()),
+        delta(last.getRightBicepsCm(), first.getRightBicepsCm()),
+        delta(last.getLeftBicepsCm(), first.getLeftBicepsCm()),
+        delta(last.getChestCm(), first.getChestCm()),
+        delta(last.getAbdomenCm(), first.getAbdomenCm()), delta(last.getHipCm(), first.getHipCm()),
+        delta(last.getRightThighCm(), first.getRightThighCm()),
+        delta(last.getLeftThighCm(), first.getLeftThighCm()),
+        delta(last.getRightCalfCm(), first.getRightCalfCm()),
+        delta(last.getLeftCalfCm(), first.getLeftCalfCm()));
   }
 
-  private Double delta(Double first, Double last) {
-    if (first == null || last == null) {
-      return null;
+  private double delta(Double current, Double previous) {
+    if (current == null || previous == null) {
+      return 0.0;
     }
-    return last - first;
+    return Math.round((current - previous) * 10.0) / 10.0;
   }
 }
