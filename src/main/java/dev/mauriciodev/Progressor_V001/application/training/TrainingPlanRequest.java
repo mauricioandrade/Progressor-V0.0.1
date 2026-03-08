@@ -6,7 +6,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import java.util.List;
 
-public record TrainingPlanRequest(@NotBlank String name, @NotNull @Positive Integer durationWeeks,
+public record TrainingPlanRequest(@NotNull Long studentId, @NotBlank String name,
+                                  @NotNull @Positive Integer durationWeeks,
                                   @NotNull TrainingLevel level, @NotNull List<String> exercises) {
 
 }

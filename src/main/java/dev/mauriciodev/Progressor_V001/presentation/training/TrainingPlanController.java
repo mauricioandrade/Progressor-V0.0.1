@@ -49,9 +49,7 @@ public class TrainingPlanController {
     if (user.getRole() != Role.TRAINER) {
       return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
-    TrainingPlan plan = new TrainingPlan(null, request.name(), request.durationWeeks(),
-        request.level(), request.exercises());
-    TrainingPlan saved = trainingPlanService.create(plan);
+    TrainingPlan saved = trainingPlanService.createForStudent(user.getId(), request);
     return ResponseEntity.status(HttpStatus.CREATED).body(TrainingPlanMapper.toResponse(saved));
   }
 
@@ -89,7 +87,6 @@ public class TrainingPlanController {
         .stream().map(TrainingPlanMapper::toResponse).toList();
     return ResponseEntity.ok(history);
   }
-
 
   @GetMapping
   @Operation(summary = "List all training plans", description = "Returns a list of all registered training plans")

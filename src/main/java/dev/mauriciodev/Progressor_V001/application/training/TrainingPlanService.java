@@ -12,7 +12,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 @Service
-public final class TrainingPlanService {
+public class TrainingPlanService {
 
   private final TrainingPlanRepository trainingPlanRepository;
   private final StudentService studentService;
@@ -50,13 +50,18 @@ public final class TrainingPlanService {
     return studentService.register(student);
   }
 
-  public TrainingPlan createForStudent(UUID userId, TrainingPlanRequest request) {
-    Student student = studentRepository.findByUserId(userId)
-        .orElseThrow(() -> new StudentNotFoundException(userId));
+  public TrainingPlan createForStudent(UUID trainerUserId, TrainingPlanRequest request) {
+    Student student = studentRepository.findById(request.studentId())
+        .orElseThrow(() -> new StudentNotFoundException(request.studentId()));
 
     TrainingPlan plan = new TrainingPlan(null, request.name(), request.durationWeeks(),
         request.level(), request.exercises());
     TrainingPlan saved = trainingPlanRepository.save(plan);
+
+    if (student.getCurrentTrainingPlan() != null) {
+      student.addToHistory(student.getCurrentTrainingPlan());
+    }
+
     student.setCurrentTrainingPlan(saved);
     studentRepository.save(student);
     return saved;

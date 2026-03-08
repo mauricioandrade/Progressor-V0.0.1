@@ -12,7 +12,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 @Service
-public final class PersonalTrainerService {
+public class PersonalTrainerService {
 
   private final PersonalTrainerRepository personalTrainerRepository;
   private final StudentRepository studentRepository;
