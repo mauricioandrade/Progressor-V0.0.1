@@ -8,9 +8,11 @@
 
 <br/><br/>
 
-# 📈 Progressor
+# 📈 Progressor V0.0.1
 
-### 🇺🇸 English &nbsp;|&nbsp; 🇧🇷 [Português](#-progressor-1)
+**Backend API · [Frontend →](https://github.com/mauricioandrade/progressor-frontend)**
+
+### 🇺🇸 English &nbsp;|&nbsp; 🇧🇷 [Português](#-progressor-v001-1)
 
 </div>
 
@@ -22,29 +24,32 @@
 
 > Optional trainer. Maximum autonomy. Every step tracked.
 
+**V0.0.1 is complete** — all 16 milestones implemented, from project setup to a fully functional React frontend.
+
+🎨 **Frontend:** [github.com/mauricioandrade/progressor-frontend](https://github.com/mauricioandrade/progressor-frontend)
+
 ---
 
 ## 🛠️ Tech Stack
 
+### Backend
 | Technology | Version | Purpose |
-|---|---------|---|
-| Java | 25      | Main language |
-| Spring Boot | 4.0.3   | Application framework |
-| Spring Web | 4.0.3   | REST API |
-| Spring Data JPA | 4.0.3   | Database persistence |
-| Spring Security | 7.x     | Authentication and authorization |
-| JJWT | 0.12.6  | JWT token generation and validation |
-| Spring Actuator | 4.0.3   | Health check and monitoring |
-| SpringDoc OpenAPI | 2.8.5       | Swagger documentation |
-| PostgreSQL | 18      | Relational database |
-| Docker | —       | Local database container |
-| Maven | —       | Dependency management |
+|---|---|---|
+| Java | 25 | Main language |
+| Spring Boot | 4.0.3 | Application framework |
+| Spring Web | — | REST API |
+| Spring Data JPA | — | Database persistence |
+| Spring Security | 7.x | Authentication and authorization |
+| JJWT | 0.12.6 | JWT token generation and validation |
+| Spring Actuator | — | Health check and monitoring |
+| SpringDoc OpenAPI | — | Swagger documentation |
+| PostgreSQL | 18 | Relational database |
+| Docker | — | Local database container |
+| Maven | — | Dependency management |
 
 ---
 
-## 🏗️ Architecture
-
-The project follows **Clean Architecture** organized into four layers:
+## 🏗️ Architecture — Clean Architecture
 
 ```
 dev.mauriciodev.Progressor_V001/
@@ -54,6 +59,7 @@ dev.mauriciodev.Progressor_V001/
 │   ├── student/                   → Student entity + exceptions
 │   ├── trainer/                   → PersonalTrainer entity + exceptions
 │   ├── training/                  → TrainingPlan entity + exceptions
+│   ├── measurement/               → Measurement entity + exceptions
 │   ├── shared/                    → Goal, TrainingLevel, Progressable
 │   └── user/                      → User (auth entity), Role
 │
@@ -61,7 +67,8 @@ dev.mauriciodev.Progressor_V001/
 │   ├── auth/                      → AuthService, RegisterRequest, LoginRequest, AuthResponse
 │   ├── student/                   → StudentService, StudentRequest/Response, StudentMapper
 │   ├── trainer/                   → PersonalTrainerService, TrainerRequest/Response, TrainerMapper
-│   └── training/                  → TrainingPlanService, TrainingPlanRequest/Response, TrainingPlanMapper
+│   ├── training/                  → TrainingPlanService, TrainingPlanRequest/Response, TrainingPlanMapper
+│   └── measurement/               → MeasurementService, MeasurementRequest/Response, MeasurementMapper
 │
 ├── infrastructure/                → Frameworks and external integrations
 │   ├── persistence/               → JPA Repositories
@@ -73,6 +80,7 @@ dev.mauriciodev.Progressor_V001/
     ├── student/                   → StudentController
     ├── trainer/                   → PersonalTrainerController
     ├── training/                  → TrainingPlanController
+    ├── measurement/               → MeasurementController
     ├── exception/                 → GlobalExceptionHandler
     └── UserController             → /api/users/me
 ```
@@ -104,15 +112,59 @@ docker compose up -d
 mvn spring-boot:run
 ```
 
-**4. Access the API documentation**
+> The backend runs on **port 8081** (`server.port=8081` in `application.yml`).
+
+---
+
+## 📖 Testing the API
+
+### Option 1 — Swagger UI (browser)
+
+Access the interactive API documentation:
 ```
-http://localhost:8080/swagger-ui/index.html
+http://localhost:8081/swagger-ui/index.html
 ```
 
-**5. Check application health**
+**How to authenticate in Swagger:**
+1. Call `POST /auth/login` with your credentials
+2. Copy the `token` from the response
+3. Click the **Authorize 🔓** button at the top right
+4. Paste: `Bearer <your_token>`
+5. Click **Authorize** — all subsequent requests will include the token
+
+**Suggested test flow in Swagger:**
 ```
-GET http://localhost:8080/actuator/health
+POST /auth/register    → create a STUDENT account
+POST /auth/register    → create a TRAINER account
+POST /auth/login       → login as STUDENT, copy token, authorize
+GET  /students/me      → view student profile
+PUT  /students/me      → update age, weight, height, goal
+POST /auth/login       → login as TRAINER, copy token, authorize
+POST /trainers/me/students/{id}  → link student to trainer
+POST /training-plans   → create a training plan for the student
+POST /auth/login       → login as STUDENT again
+GET  /training-plans/me/current  → view current plan
+POST /measurements     → record a measurement
+POST /measurements     → record a second measurement
+GET  /measurements/evolution     → view evolution deltas
 ```
+
+---
+
+### Option 2 — Postman Collection
+
+Import the collection file from `docs/Progressor-API.postman_collection.json`.
+
+**Features:**
+- Pre-configured base URL (`http://localhost:8081`)
+- Login requests automatically save `{{studentToken}}` and `{{trainerToken}}` as collection variables — no manual copy/paste needed
+- All endpoints organized by module: Auth, Students, Trainers, Training Plans, Measurements
+
+**Quick start:**
+1. Import the collection in Postman: **Import → Upload Files**
+2. Run **Login Student** → token saved automatically
+3. Run **Login Trainer** → token saved automatically
+4. All other requests use `{{studentToken}}` or `{{trainerToken}}` automatically
 
 ---
 
@@ -121,37 +173,44 @@ GET http://localhost:8080/actuator/health
 ### Authentication
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
-| `POST` | `/auth/register` | ❌ | Register a new user |
+| `POST` | `/auth/register` | ❌ | Register a new user (STUDENT or TRAINER) |
 | `POST` | `/auth/login` | ❌ | Login and receive JWT token |
+| `GET` | `/api/users/me` | ✅ | Get authenticated user info |
 
 ### Students
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
-| `POST` | `/students` | ✅ | Register a new student |
-| `GET` | `/students` | ✅ | List all students |
-| `GET` | `/students/{id}` | ✅ | Find student by ID |
-| `PATCH` | `/students/{id}/progress` | ✅ | Trigger student level progression |
-| `GET` | `/students/{id}/history` | ✅ | Get training plan history |
+| `GET` | `/students/me` | ✅ STUDENT | Get own profile |
+| `PUT` | `/students/me` | ✅ STUDENT | Update own profile |
+| `PATCH` | `/students/me/progress` | ✅ STUDENT | Trigger level progression |
 
 ### Personal Trainers
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
-| `POST` | `/trainers` | ✅ | Register a new trainer |
-| `GET` | `/trainers` | ✅ | List all trainers |
-| `GET` | `/trainers/{id}` | ✅ | Find trainer by ID |
+| `GET` | `/trainers/me` | ✅ TRAINER | Get own profile |
+| `POST` | `/trainers/me/students/{id}` | ✅ TRAINER | Link a student |
+| `DELETE` | `/trainers/me/students/{id}` | ✅ TRAINER | Unlink a student |
+| `GET` | `/trainers/me/students` | ✅ TRAINER | List supervised students |
 
 ### Training Plans
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
-| `POST` | `/training-plans` | ✅ | Create a new training plan |
+| `POST` | `/training-plans` | ✅ TRAINER | Create plan for a student |
+| `POST` | `/training-plans/me` | ✅ STUDENT | Create own training plan |
+| `GET` | `/training-plans/me/current` | ✅ STUDENT | Get current active plan |
+| `GET` | `/training-plans/me/history` | ✅ STUDENT | Get plan history |
 | `GET` | `/training-plans` | ✅ | List all training plans |
-| `GET` | `/training-plans/{id}` | ✅ | Find training plan by ID |
-| `POST` | `/training-plans/{id}/assign/{studentId}` | ✅ | Assign plan to student |
 
-### User Profile
+### Measurements
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
-| `GET` | `/api/users/me` | ✅ | Get authenticated user info |
+| `POST` | `/measurements` | ✅ STUDENT | Record a new measurement |
+| `GET` | `/measurements` | ✅ STUDENT | List all measurements |
+| `GET` | `/measurements/evolution` | ✅ STUDENT | Get evolution deltas |
+| `GET` | `/measurements/trainer/students/{id}` | ✅ TRAINER | View student measurements |
+
+**Measurement fields:**
+`weightKg`, `heightCm`, `bodyFatPercent`, `muscleMassPercent`, `waistCm`, `hipCm`, `chestCm`, `rightArmCm`, `leftArmCm`, `rightThighCm`, `leftThighCm`
 
 ### Monitoring
 | Method | Endpoint | Auth | Description |
@@ -172,12 +231,12 @@ GET http://localhost:8080/actuator/health
 - [x] 📖 **M8** — API Documentation (Swagger / OpenAPI)
 - [x] 🔐 **M9** — Authentication (Spring Security + JWT)
 - [x] ♻️ **M10** — Refactor: Clean Architecture Migration
-- [ ] 🔗 **M11** — Auth: User–Domain Binding (User ↔ Student / Trainer)
-- [ ] 🎓 **M12** — Student Module (self-service endpoints)
-- [ ] 🏋️ **M13** — Personal Trainer Module (profile + student supervision)
-- [ ] 📋 **M14** — Training Plans Module (role-based access + self-service)
-- [ ] 📏 **M15** — Measurements Module (body tracking for students and trainers)
-- [ ] 🎨 **M16** — Frontend (React + Vite)
+- [x] 🔗 **M11** — Auth: User–Domain Binding (User ↔ Student / Trainer)
+- [x] 🎓 **M12** — Student Module (self-service endpoints)
+- [x] 🏋️ **M13** — Personal Trainer Module (profile + student supervision)
+- [x] 📋 **M14** — Training Plans Module (role-based access + self-service)
+- [x] 📏 **M15** — Measurements Module (body tracking: weight, body fat, arms D/E, thighs D/E...)
+- [x] 🎨 **M16** — Frontend (React + Vite + TypeScript + Tailwind)
 
 ---
 
@@ -199,34 +258,18 @@ git remote add upstream https://github.com/mauricioandrade/Progressor-V0.0.1.git
 
 ### 4. Pick an issue
 - Go to the [Issues](https://github.com/mauricioandrade/Progressor-V0.0.1/issues) tab
-- Pick an open issue that interests you
-- Comment: **"I'd like to work on this"**
-- Wait for it to be assigned to you
+- Comment: **"I'd like to work on this"** and wait for assignment
 
-### 5. Create a branch
+### 5. Create a branch, commit and open a Pull Request
 ```bash
 git checkout -b feature/issue-XX-short-description
-```
-
-### 6. Commit your changes
-```bash
 git commit -m "feat(scope): short description"
-```
-
-### 7. Push and open a Pull Request
-```bash
 git push origin feature/issue-XX-short-description
 ```
-
-Open a **Pull Request** targeting the `main` branch.
 
 ---
 
 ## 📋 Commit Convention
-
-```
-<type>(<scope>): <short message>
-```
 
 | Type | When to use |
 |---|---|
@@ -245,9 +288,11 @@ Open a **Pull Request** targeting the `main` branch.
 
 <div align="center">
 
-# 📈 Progressor
+# 📈 Progressor V0.0.1
 
-### 🇧🇷 Português &nbsp;|&nbsp; 🇺🇸 [English](#-progressor)
+**Backend API · [Frontend →](https://github.com/mauricioandrade/progressor-frontend)**
+
+### 🇧🇷 Português &nbsp;|&nbsp; 🇺🇸 [English](#-progressor-v001)
 
 </div>
 
@@ -258,6 +303,10 @@ Open a **Pull Request** targeting the `main` branch.
 **Progressor** é um sistema de gerenciamento de academia com foco em **evolução**. Alunos e personal trainers podem se cadastrar, registrar medidas, gerenciar planos de treino e acompanhar a evolução física ao longo do tempo.
 
 > Personal opcional. Autonomia máxima. Cada etapa registrada.
+
+**V0.0.1 está completa** — todos os 16 milestones implementados, do setup inicial até um frontend React totalmente funcional.
+
+🎨 **Frontend:** [github.com/mauricioandrade/progressor-frontend](https://github.com/mauricioandrade/progressor-frontend)
 
 ---
 
@@ -279,9 +328,7 @@ Open a **Pull Request** targeting the `main` branch.
 
 ---
 
-## 🏗️ Arquitetura
-
-O projeto segue **Clean Architecture** organizada em quatro camadas:
+## 🏗️ Arquitetura — Clean Architecture
 
 ```
 dev.mauriciodev.Progressor_V001/
@@ -291,6 +338,7 @@ dev.mauriciodev.Progressor_V001/
 │   ├── student/                   → Entidade Student + exceções
 │   ├── trainer/                   → Entidade PersonalTrainer + exceções
 │   ├── training/                  → Entidade TrainingPlan + exceções
+│   ├── measurement/               → Entidade Measurement + exceções
 │   ├── shared/                    → Goal, TrainingLevel, Progressable
 │   └── user/                      → User (entidade de auth), Role
 │
@@ -298,7 +346,8 @@ dev.mauriciodev.Progressor_V001/
 │   ├── auth/                      → AuthService, RegisterRequest, LoginRequest, AuthResponse
 │   ├── student/                   → StudentService, StudentRequest/Response, StudentMapper
 │   ├── trainer/                   → PersonalTrainerService, TrainerRequest/Response, TrainerMapper
-│   └── training/                  → TrainingPlanService, TrainingPlanRequest/Response, TrainingPlanMapper
+│   ├── training/                  → TrainingPlanService, TrainingPlanRequest/Response, TrainingPlanMapper
+│   └── measurement/               → MeasurementService, MeasurementRequest/Response, MeasurementMapper
 │
 ├── infrastructure/                → Frameworks e integrações externas
 │   ├── persistence/               → Repositórios JPA
@@ -310,6 +359,7 @@ dev.mauriciodev.Progressor_V001/
     ├── student/                   → StudentController
     ├── trainer/                   → PersonalTrainerController
     ├── training/                  → TrainingPlanController
+    ├── measurement/               → MeasurementController
     ├── exception/                 → GlobalExceptionHandler
     └── UserController             → /api/users/me
 ```
@@ -341,15 +391,59 @@ docker compose up -d
 mvn spring-boot:run
 ```
 
-**4. Acesse a documentação da API**
+> O backend roda na **porta 8081** (`server.port=8081` no `application.yml`).
+
+---
+
+## 📖 Como Testar a API
+
+### Opção 1 — Swagger UI (browser)
+
+Acesse a documentação interativa:
 ```
-http://localhost:8080/swagger-ui/index.html
+http://localhost:8081/swagger-ui/index.html
 ```
 
-**5. Verifique a saúde da aplicação**
+**Como autenticar no Swagger:**
+1. Execute `POST /auth/login` com suas credenciais
+2. Copie o valor do campo `token` na resposta
+3. Clique no botão **Authorize 🔓** no topo da página
+4. Cole: `Bearer <seu_token>`
+5. Clique em **Authorize** — todas as requisições seguintes incluirão o token
+
+**Fluxo sugerido de testes no Swagger:**
 ```
-GET http://localhost:8080/actuator/health
+POST /auth/register    → cria conta STUDENT
+POST /auth/register    → cria conta TRAINER
+POST /auth/login       → login como STUDENT, copia token e autoriza
+GET  /students/me      → visualiza perfil do aluno
+PUT  /students/me      → atualiza idade, peso, altura, objetivo
+POST /auth/login       → login como TRAINER, copia token e autoriza
+POST /trainers/me/students/{id}  → vincula aluno ao trainer
+POST /training-plans   → cria plano de treino para o aluno
+POST /auth/login       → login como STUDENT novamente
+GET  /training-plans/me/current  → visualiza plano atual
+POST /measurements     → registra uma medição
+POST /measurements     → registra uma segunda medição
+GET  /measurements/evolution     → visualiza os deltas de evolução
 ```
+
+---
+
+### Opção 2 — Coleção Postman
+
+Importe o arquivo `docs/Progressor-API.postman_collection.json`.
+
+**Funcionalidades da coleção:**
+- URL base configurada como variável `{{baseUrl}}` (`http://localhost:8081`)
+- As requisições de login salvam automaticamente `{{studentToken}}` e `{{trainerToken}}` como variáveis de coleção — sem necessidade de copiar manualmente
+- Todos os endpoints organizados por módulo: Auth, Students, Trainers, Training Plans, Measurements
+
+**Como começar:**
+1. Importe a coleção no Postman: **Import → Upload Files**
+2. Execute **Login Student** → token salvo automaticamente
+3. Execute **Login Trainer** → token salvo automaticamente
+4. Todas as demais requisições usam `{{studentToken}}` ou `{{trainerToken}}` automaticamente
 
 ---
 
@@ -358,37 +452,44 @@ GET http://localhost:8080/actuator/health
 ### Autenticação
 | Método | Endpoint | Auth | Descrição |
 |---|---|---|---|
-| `POST` | `/auth/register` | ❌ | Registrar novo usuário |
+| `POST` | `/auth/register` | ❌ | Registrar novo usuário (STUDENT ou TRAINER) |
 | `POST` | `/auth/login` | ❌ | Login e recebimento do token JWT |
+| `GET` | `/api/users/me` | ✅ | Retornar dados do usuário autenticado |
 
 ### Alunos
 | Método | Endpoint | Auth | Descrição |
 |---|---|---|---|
-| `POST` | `/students` | ✅ | Cadastrar novo aluno |
-| `GET` | `/students` | ✅ | Listar todos os alunos |
-| `GET` | `/students/{id}` | ✅ | Buscar aluno por ID |
-| `PATCH` | `/students/{id}/progress` | ✅ | Disparar progressão do aluno |
-| `GET` | `/students/{id}/history` | ✅ | Histórico de planos de treino |
+| `GET` | `/students/me` | ✅ STUDENT | Buscar próprio perfil |
+| `PUT` | `/students/me` | ✅ STUDENT | Atualizar próprio perfil |
+| `PATCH` | `/students/me/progress` | ✅ STUDENT | Disparar progressão de nível |
 
 ### Personal Trainers
 | Método | Endpoint | Auth | Descrição |
 |---|---|---|---|
-| `POST` | `/trainers` | ✅ | Cadastrar novo personal |
-| `GET` | `/trainers` | ✅ | Listar todos os personais |
-| `GET` | `/trainers/{id}` | ✅ | Buscar personal por ID |
+| `GET` | `/trainers/me` | ✅ TRAINER | Buscar próprio perfil |
+| `POST` | `/trainers/me/students/{id}` | ✅ TRAINER | Vincular aluno |
+| `DELETE` | `/trainers/me/students/{id}` | ✅ TRAINER | Desvincular aluno |
+| `GET` | `/trainers/me/students` | ✅ TRAINER | Listar alunos supervisionados |
 
 ### Planos de Treino
 | Método | Endpoint | Auth | Descrição |
 |---|---|---|---|
-| `POST` | `/training-plans` | ✅ | Criar novo plano de treino |
+| `POST` | `/training-plans` | ✅ TRAINER | Criar plano para um aluno |
+| `POST` | `/training-plans/me` | ✅ STUDENT | Criar próprio plano de treino |
+| `GET` | `/training-plans/me/current` | ✅ STUDENT | Buscar plano ativo atual |
+| `GET` | `/training-plans/me/history` | ✅ STUDENT | Histórico de planos |
 | `GET` | `/training-plans` | ✅ | Listar todos os planos |
-| `GET` | `/training-plans/{id}` | ✅ | Buscar plano por ID |
-| `POST` | `/training-plans/{id}/assign/{studentId}` | ✅ | Atribuir plano ao aluno |
 
-### Perfil do Usuário
+### Medidas
 | Método | Endpoint | Auth | Descrição |
 |---|---|---|---|
-| `GET` | `/api/users/me` | ✅ | Retornar dados do usuário autenticado |
+| `POST` | `/measurements` | ✅ STUDENT | Registrar nova medição |
+| `GET` | `/measurements` | ✅ STUDENT | Listar todas as medições |
+| `GET` | `/measurements/evolution` | ✅ STUDENT | Calcular deltas de evolução |
+| `GET` | `/measurements/trainer/students/{id}` | ✅ TRAINER | Ver medições de um aluno |
+
+**Campos de medição:**
+`weightKg`, `heightCm`, `bodyFatPercent`, `muscleMassPercent`, `waistCm`, `hipCm`, `chestCm`, `rightArmCm`, `leftArmCm`, `rightThighCm`, `leftThighCm`
 
 ### Monitoramento
 | Método | Endpoint | Auth | Descrição |
@@ -409,61 +510,33 @@ GET http://localhost:8080/actuator/health
 - [x] 📖 **M8** — API Documentation (Swagger / OpenAPI)
 - [x] 🔐 **M9** — Authentication (Spring Security + JWT)
 - [x] ♻️ **M10** — Refactor: Clean Architecture Migration
-- [ ] 🔗 **M11** — Auth: User–Domain Binding (User ↔ Student / Trainer)
-- [ ] 🎓 **M12** — Student Module (endpoints de auto-serviço)
-- [ ] 🏋️ **M13** — Personal Trainer Module (perfil + supervisão de alunos)
-- [ ] 📋 **M14** — Training Plans Module (controle por role + auto-serviço)
-- [ ] 📏 **M15** — Measurements Module (registro de medidas corporais)
-- [ ] 🎨 **M16** — Frontend (React + Vite)
+- [x] 🔗 **M11** — Auth: User–Domain Binding (User ↔ Student / Trainer)
+- [x] 🎓 **M12** — Student Module (endpoints de auto-serviço)
+- [x] 🏋️ **M13** — Personal Trainer Module (perfil + supervisão de alunos)
+- [x] 📋 **M14** — Training Plans Module (controle por role + auto-serviço)
+- [x] 📏 **M15** — Measurements Module (peso, gordura, braço D/E, coxa D/E...)
+- [x] 🎨 **M16** — Frontend (React + Vite + TypeScript + Tailwind)
 
 ---
 
 ## 🤝 Como Contribuir
 
 ### 1. Faça um Fork do repositório
-Clique no botão **Fork** no canto superior direito desta página.
-
 ### 2. Clone o seu fork
 ```bash
 git clone https://github.com/SEU_USUARIO/Progressor-V0.0.1.git
-cd Progressor-V0.0.1
 ```
-
-### 3. Configure o remote upstream
-```bash
-git remote add upstream https://github.com/mauricioandrade/Progressor-V0.0.1.git
-```
-
-### 4. Escolha uma issue
-- Acesse a aba [Issues](https://github.com/mauricioandrade/Progressor-V0.0.1/issues)
-- Escolha uma issue aberta que te interesse
-- Comente: **"Gostaria de trabalhar nessa issue"**
-- Aguarde ser atribuída a você
-
-### 5. Crie uma branch
+### 3. Crie uma branch e faça seus commits
 ```bash
 git checkout -b feature/issue-XX-descricao-curta
-```
-
-### 6. Faça seus commits
-```bash
 git commit -m "feat(escopo): descrição curta em inglês"
-```
-
-### 7. Suba e abra um Pull Request
-```bash
 git push origin feature/issue-XX-descricao-curta
 ```
-
 Abra um **Pull Request** apontando para a branch `main`.
 
 ---
 
 ## 📋 Convenção de Commits
-
-```
-<tipo>(<escopo>): <mensagem curta em inglês>
-```
 
 | Tipo | Quando usar |
 |---|---|
