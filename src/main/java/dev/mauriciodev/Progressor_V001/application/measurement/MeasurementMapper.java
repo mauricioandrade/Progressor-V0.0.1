@@ -10,6 +10,7 @@ public class MeasurementMapper {
   public static MeasurementResponse toResponse(Measurement m) {
     return new MeasurementResponse(m.getId(), m.getStudent().getId(), m.getRecordedAt(),
         m.getWeightKg(), m.getHeightCm(), m.getBodyFatPercent(), m.getMuscleMassPercent(),
-        m.getWaistCm(), m.getHipCm(), m.getChestCm(), m.getArmCm(), m.getThighCm());
+        m.getRightBicepsCm(), m.getLeftBicepsCm(), m.getChestCm(), m.getAbdomenCm(), m.getHipCm(),
+        m.getRightThighCm(), m.getLeftThighCm(), m.getRightCalfCm(), m.getLeftCalfCm());
   }
 }

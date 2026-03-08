@@ -1,12 +1,20 @@
 package dev.mauriciodev.Progressor_V001.application.measurement;
 
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import java.time.LocalDateTime;
 
-public record MeasurementRequest(LocalDateTime recordedAt, @Positive Double weightKg,
-                                 @Positive Double heightCm, @Positive Double bodyFatPercent,
-                                 @Positive Double muscleMassPercent, @Positive Double waistCm,
-                                 @Positive Double hipCm, @Positive Double chestCm,
-                                 @Positive Double armCm, @Positive Double thighCm) {
+public record MeasurementRequest(@NotNull @Positive Double weightKg,
+                                 @NotNull @Positive Double heightCm,
+                                 @NotNull @Positive Double bodyFatPercent,
+                                 @NotNull @Positive Double muscleMassPercent,
+                                 @NotNull @Positive Double rightBicepsCm,
+                                 @NotNull @Positive Double leftBicepsCm,
+                                 @NotNull @Positive Double chestCm,
+                                 @NotNull @Positive Double abdomenCm,
+                                 @NotNull @Positive Double hipCm,
+                                 @NotNull @Positive Double rightThighCm,
+                                 @NotNull @Positive Double leftThighCm,
+                                 @NotNull @Positive Double rightCalfCm,
+                                 @NotNull @Positive Double leftCalfCm) {
 
 }
