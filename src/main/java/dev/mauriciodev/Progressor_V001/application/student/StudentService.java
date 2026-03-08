@@ -42,6 +42,13 @@ public final class StudentService {
   }
 
   @Transactional
+  public Student evolveProgress(UUID userId) {
+    Student student = findByUserId(userId);
+    student.evolve();
+    return studentRepository.save(student);
+  }
+
+  @Transactional
   public Student progress(Long id) {
     Student student = findById(id);
 

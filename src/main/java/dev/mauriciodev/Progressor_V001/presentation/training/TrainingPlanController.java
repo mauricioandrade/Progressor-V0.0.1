@@ -8,6 +8,8 @@ import dev.mauriciodev.Progressor_V001.application.training.TrainingPlanResponse
 import dev.mauriciodev.Progressor_V001.application.training.TrainingPlanService;
 import dev.mauriciodev.Progressor_V001.domain.student.Student;
 import dev.mauriciodev.Progressor_V001.domain.training.TrainingPlan;
+import dev.mauriciodev.Progressor_V001.domain.user.Role;
+import dev.mauriciodev.Progressor_V001.domain.user.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -16,6 +18,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,53 +38,81 @@ public class TrainingPlanController {
   }
 
   @PostMapping
-  @Operation(summary = "Create a training plan", description = "Creates and saves a new training plan")
+  @Operation(summary = "Create a training plan", description = "Creates a new training plan. Requires TRAINER role.")
   @ApiResponses({
       @ApiResponse(responseCode = "201", description = "Training plan created successfully"),
-      @ApiResponse(responseCode = "400", description = "Invalid request data")
-  })
-  public ResponseEntity<TrainingPlanResponse> create(@Valid @RequestBody TrainingPlanRequest request) {
-    TrainingPlan plan = new TrainingPlan(
-        null,
-        request.name(),
-        request.durationWeeks(),
-        request.level(),
-        request.exercises()
-    );
+      @ApiResponse(responseCode = "400", description = "Invalid request data"),
+      @ApiResponse(responseCode = "403", description = "Access denied — TRAINER role required")})
+  public ResponseEntity<TrainingPlanResponse> create(
+      @Valid @RequestBody TrainingPlanRequest request, Authentication authentication) {
+    User user = (User) authentication.getPrincipal();
+    if (user.getRole() != Role.TRAINER) {
+      return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
+    TrainingPlan plan = new TrainingPlan(null, request.name(), request.durationWeeks(),
+        request.level(), request.exercises());
     TrainingPlan saved = trainingPlanService.create(plan);
     return ResponseEntity.status(HttpStatus.CREATED).body(TrainingPlanMapper.toResponse(saved));
   }
+
+  @PostMapping("/me")
+  @Operation(summary = "Create own training plan", description = "Creates a training plan for the authenticated student.")
+  @ApiResponses({
+      @ApiResponse(responseCode = "201", description = "Training plan created successfully"),
+      @ApiResponse(responseCode = "403", description = "Access denied — STUDENT role required")})
+  public ResponseEntity<TrainingPlanResponse> createForMe(
+      @Valid @RequestBody TrainingPlanRequest request, Authentication authentication) {
+    User user = (User) authentication.getPrincipal();
+    if (user.getRole() != Role.STUDENT) {
+      return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
+    TrainingPlan saved = trainingPlanService.createForStudent(user.getId(), request);
+    return ResponseEntity.status(HttpStatus.CREATED).body(TrainingPlanMapper.toResponse(saved));
+  }
+
+  @GetMapping("/me/current")
+  @Operation(summary = "Get current training plan", description = "Returns the authenticated student's current training plan")
+  @ApiResponses({@ApiResponse(responseCode = "200", description = "Training plan found"),
+      @ApiResponse(responseCode = "404", description = "No active training plan found")})
+  public ResponseEntity<TrainingPlanResponse> getCurrentPlan(Authentication authentication) {
+    User user = (User) authentication.getPrincipal();
+    TrainingPlan plan = trainingPlanService.findCurrentForStudent(user.getId());
+    return ResponseEntity.ok(TrainingPlanMapper.toResponse(plan));
+  }
+
+  @GetMapping("/me/history")
+  @Operation(summary = "Get training plan history", description = "Returns the authenticated student's training plan history")
+  @ApiResponse(responseCode = "200", description = "History retrieved successfully")
+  public ResponseEntity<List<TrainingPlanResponse>> getPlanHistory(Authentication authentication) {
+    User user = (User) authentication.getPrincipal();
+    List<TrainingPlanResponse> history = trainingPlanService.findHistoryForStudent(user.getId())
+        .stream().map(TrainingPlanMapper::toResponse).toList();
+    return ResponseEntity.ok(history);
+  }
+
 
   @GetMapping
   @Operation(summary = "List all training plans", description = "Returns a list of all registered training plans")
   @ApiResponse(responseCode = "200", description = "Training plans listed successfully")
   public ResponseEntity<List<TrainingPlanResponse>> findAll() {
-    List<TrainingPlanResponse> response = trainingPlanService.findAll()
-        .stream()
-        .map(TrainingPlanMapper::toResponse)
-        .toList();
+    List<TrainingPlanResponse> response = trainingPlanService.findAll().stream()
+        .map(TrainingPlanMapper::toResponse).toList();
     return ResponseEntity.ok(response);
   }
 
   @GetMapping("/{id}")
   @Operation(summary = "Find training plan by ID", description = "Returns a single training plan by its ID")
-  @ApiResponses({
-      @ApiResponse(responseCode = "200", description = "Training plan found"),
-      @ApiResponse(responseCode = "404", description = "Training plan not found")
-  })
+  @ApiResponses({@ApiResponse(responseCode = "200", description = "Training plan found"),
+      @ApiResponse(responseCode = "404", description = "Training plan not found")})
   public ResponseEntity<TrainingPlanResponse> findById(@PathVariable Long id) {
     return ResponseEntity.ok(TrainingPlanMapper.toResponse(trainingPlanService.findById(id)));
   }
 
   @PostMapping("/{id}/assign/{studentId}")
-  @Operation(summary = "Assign plan to student",
-      description = "Assigns a training plan to a specific student")
-  @ApiResponses({
-      @ApiResponse(responseCode = "200", description = "Plan assigned successfully"),
-      @ApiResponse(responseCode = "404", description = "Training plan or student not found")
-  })
-  public ResponseEntity<StudentResponse> assignToStudent(
-      @PathVariable Long id,
+  @Operation(summary = "Assign plan to student", description = "Assigns a training plan to a specific student")
+  @ApiResponses({@ApiResponse(responseCode = "200", description = "Plan assigned successfully"),
+      @ApiResponse(responseCode = "404", description = "Training plan or student not found")})
+  public ResponseEntity<StudentResponse> assignToStudent(@PathVariable Long id,
       @PathVariable Long studentId) {
     Student student = trainingPlanService.assignToStudent(id, studentId);
     return ResponseEntity.ok(StudentMapper.toResponse(student));

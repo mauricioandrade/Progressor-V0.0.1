@@ -17,6 +17,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,7 +26,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.security.core.Authentication;
 
 @RestController
 @RequestMapping("/students")
@@ -112,6 +112,17 @@ public class StudentController {
       Authentication authentication) {
     User user = (User) authentication.getPrincipal();
     Student updated = studentService.update(user.getId(), request);
+    return ResponseEntity.ok(StudentMapper.toResponse(updated));
+  }
+
+  @PatchMapping("/me/progress")
+  @Operation(summary = "Evolve student level", description = "Advances the authenticated student to the next training level")
+  @ApiResponses({@ApiResponse(responseCode = "200", description = "Level evolved successfully"),
+      @ApiResponse(responseCode = "400", description = "Student is already at the highest level"),
+      @ApiResponse(responseCode = "404", description = "Student not found")})
+  public ResponseEntity<StudentResponse> evolveProgress(Authentication authentication) {
+    User user = (User) authentication.getPrincipal();
+    Student updated = studentService.evolveProgress(user.getId());
     return ResponseEntity.ok(StudentMapper.toResponse(updated));
   }
 }
