@@ -1,5 +1,6 @@
 package dev.mauriciodev.Progressor_V001.presentation.exception;
 
+import dev.mauriciodev.Progressor_V001.domain.measurement.MeasurementNotFoundException;
 import dev.mauriciodev.Progressor_V001.domain.student.StudentNotFoundException;
 import dev.mauriciodev.Progressor_V001.domain.trainer.TrainerNotFoundException;
 import dev.mauriciodev.Progressor_V001.domain.training.TrainingPlanNotFoundException;
@@ -28,26 +29,23 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(IllegalArgumentException.class)
   public ResponseEntity<Map<String, String>> handleIllegalArgument(IllegalArgumentException ex) {
-    return ResponseEntity
-        .status(HttpStatus.BAD_REQUEST)
-        .body(Map.of("error", ex.getMessage()));
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", ex.getMessage()));
   }
 
-  @ExceptionHandler({
-      StudentNotFoundException.class,
-      TrainerNotFoundException.class,
-      TrainingPlanNotFoundException.class
-  })
+  @ExceptionHandler(IllegalStateException.class)
+  public ResponseEntity<Map<String, String>> handleIllegalState(IllegalStateException ex) {
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", ex.getMessage()));
+  }
+
+  @ExceptionHandler({StudentNotFoundException.class, TrainerNotFoundException.class,
+      TrainingPlanNotFoundException.class, MeasurementNotFoundException.class})
   public ResponseEntity<Map<String, String>> handleNotFound(RuntimeException ex) {
-    return ResponseEntity
-        .status(HttpStatus.NOT_FOUND)
-        .body(Map.of("error", ex.getMessage()));
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", ex.getMessage()));
   }
 
   @ExceptionHandler(RuntimeException.class)
   public ResponseEntity<Map<String, String>> handleRuntime(RuntimeException ex) {
-    return ResponseEntity
-        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
         .body(Map.of("error", ex.getMessage()));
   }
 }
