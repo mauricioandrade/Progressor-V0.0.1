@@ -2,6 +2,7 @@ package dev.mauriciodev.Progressor_V001.infrastructure.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -40,8 +41,10 @@ public class SecurityConfig {
     http.cors(Customizer.withDefaults()).csrf(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(
             auth -> auth.requestMatchers("/auth/**", "/swagger-ui/**", "/swagger-ui.html",
-                "/v3/api-docs/**", "/actuator/health").permitAll().anyRequest().authenticated())
-        .sessionManagement(
+                    "/v3/api-docs/**", "/actuator/health").permitAll()
+                .requestMatchers(HttpMethod.GET, "/students/me", "/students/me/avatar")
+                .authenticated().requestMatchers(HttpMethod.GET, "/students", "/students/{id}")
+                .hasAnyRole("TRAINER", "ADMIN").anyRequest().authenticated()).sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authenticationProvider(authenticationProvider())
         .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
@@ -52,7 +55,6 @@ public class SecurityConfig {
   @Bean
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
-
     configuration.setAllowedOrigins(List.of("http://localhost:5173"));
     configuration.setAllowedMethods(
         Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
@@ -61,7 +63,6 @@ public class SecurityConfig {
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", configuration);
-
     return source;
   }
 

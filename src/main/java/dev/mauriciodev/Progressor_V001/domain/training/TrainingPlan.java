@@ -34,16 +34,14 @@ public class TrainingPlan {
   private TrainingLevel level;
 
   @ElementCollection(fetch = FetchType.EAGER)
-  @CollectionTable(name = "training_plan_exercises",
-      joinColumns = @JoinColumn(name = "training_plan_id"))
-  @Column(name = "exercise")
-  private List<String> exercises;
+  @CollectionTable(name = "training_plan_exercises", joinColumns = @JoinColumn(name = "training_plan_id"))
+  private List<Exercise> exercises;
 
   protected TrainingPlan() {
   }
 
-  public TrainingPlan(Long id, String name, Integer durationWeeks,
-      TrainingLevel level, List<String> exercises) {
+  public TrainingPlan(Long id, String name, Integer durationWeeks, TrainingLevel level,
+      List<Exercise> exercises) {
     this.id = id;
     this.name = name;
     this.durationWeeks = durationWeeks;
@@ -59,16 +57,32 @@ public class TrainingPlan {
     return name;
   }
 
+  // --- SETTERS ADICIONADOS AQUI ---
+  public void setName(String name) {
+    this.name = name;
+  }
+
   public Integer getDurationWeeks() {
     return durationWeeks;
+  }
+
+  public void setDurationWeeks(Integer durationWeeks) {
+    this.durationWeeks = durationWeeks;
   }
 
   public TrainingLevel getLevel() {
     return level;
   }
 
-  public List<String> getExercises() {
+  public void setLevel(TrainingLevel level) {
+    this.level = level;
+  }
+
+  public List<Exercise> getExercises() {
     return exercises;
   }
-}
 
+  public void setExercises(List<Exercise> exercises) {
+    this.exercises = exercises;
+  }
+}

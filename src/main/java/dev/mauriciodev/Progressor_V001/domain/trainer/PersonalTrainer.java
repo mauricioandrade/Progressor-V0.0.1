@@ -17,10 +17,15 @@ public class PersonalTrainer extends Person {
   @JoinColumn(name = "user_id", unique = true)
   private User user;
 
-  @Column(unique = true)
   private String cref;
 
   private String specialty;
+
+  @Column(name = "avatar_data", columnDefinition = "BYTEA")
+  private byte[] avatarData;
+
+  @Column(name = "avatar_content_type", length = 50)
+  private String avatarContentType;
 
   protected PersonalTrainer() {
     super(null, null, null, null);
@@ -45,7 +50,31 @@ public class PersonalTrainer extends Person {
     return cref;
   }
 
+  public void setCref(String cref) {
+    this.cref = cref;
+  }
+
   public String getSpecialty() {
     return specialty;
+  }
+
+  public void setSpecialty(String specialty) {
+    this.specialty = specialty;
+  }
+
+  public byte[] getAvatarData() {
+    return avatarData;
+  }
+
+  public void setAvatarData(byte[] avatarData) {
+    this.avatarData = avatarData;
+  }
+
+  public String getAvatarContentType() {
+    return avatarContentType;
+  }
+
+  public void setAvatarContentType(String avatarContentType) {
+    this.avatarContentType = avatarContentType;
   }
 }

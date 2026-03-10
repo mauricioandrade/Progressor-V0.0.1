@@ -8,6 +8,7 @@ import java.util.List;
 
 public record TrainingPlanRequest(@NotNull Long studentId, @NotBlank String name,
                                   @NotNull @Positive Integer durationWeeks,
-                                  @NotNull TrainingLevel level, @NotNull List<String> exercises) {
+                                  @NotNull TrainingLevel level,
+                                  @NotNull List<ExerciseRequest> exercises) {
 
 }

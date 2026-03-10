@@ -35,7 +35,7 @@ public class MeasurementController {
   }
 
   @PostMapping
-  @Operation(summary = "Record a measurement", description = "Records a new body measurement for the authenticated student")
+  @Operation(summary = "Record a measurement")
   @ApiResponses({
       @ApiResponse(responseCode = "201", description = "Measurement recorded successfully"),
       @ApiResponse(responseCode = "400", description = "Invalid request data"),
@@ -48,7 +48,7 @@ public class MeasurementController {
   }
 
   @GetMapping
-  @Operation(summary = "List measurements", description = "Returns all measurements for the authenticated student ordered by date")
+  @Operation(summary = "List measurements for the authenticated student")
   @ApiResponse(responseCode = "200", description = "Measurements listed successfully")
   public ResponseEntity<List<MeasurementResponse>> findAll(Authentication authentication) {
     User user = (User) authentication.getPrincipal();
@@ -58,7 +58,7 @@ public class MeasurementController {
   }
 
   @GetMapping("/evolution")
-  @Operation(summary = "Get evolution", description = "Returns the delta between the first and last measurement of the authenticated student")
+  @Operation(summary = "Get evolution for the authenticated student")
   @ApiResponses({
       @ApiResponse(responseCode = "200", description = "Evolution calculated successfully"),
       @ApiResponse(responseCode = "400", description = "Not enough measurements"),
@@ -68,15 +68,25 @@ public class MeasurementController {
     return ResponseEntity.ok(measurementService.getEvolution(user.getId()));
   }
 
-  @GetMapping("/trainer/students/{studentId}")
-  @Operation(summary = "Get student measurements", description = "Returns all measurements for a specific student. Requires TRAINER role.")
+  @GetMapping("/students/{studentId}")
+  @Operation(summary = "List measurements for a student (trainer access)")
   @ApiResponses({
       @ApiResponse(responseCode = "200", description = "Measurements listed successfully"),
       @ApiResponse(responseCode = "404", description = "Student not found")})
-  public ResponseEntity<List<MeasurementResponse>> findByStudent(@PathVariable Long studentId,
-      Authentication authentication) {
+  public ResponseEntity<List<MeasurementResponse>> findByStudent(@PathVariable Long studentId) {
     List<MeasurementResponse> response = measurementService.findAllForStudentById(studentId)
         .stream().map(MeasurementMapper::toResponse).toList();
     return ResponseEntity.ok(response);
+  }
+
+  @GetMapping("/students/{studentId}/evolution")
+  @Operation(summary = "Get evolution for a student (trainer access)")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Evolution calculated successfully"),
+      @ApiResponse(responseCode = "400", description = "Not enough measurements"),
+      @ApiResponse(responseCode = "404", description = "Student not found")})
+  public ResponseEntity<MeasurementEvolutionResponse> getEvolutionByStudent(
+      @PathVariable Long studentId) {
+    return ResponseEntity.ok(measurementService.getEvolutionByStudentId(studentId));
   }
 }

@@ -15,7 +15,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
@@ -47,7 +47,7 @@ public class Student extends Person implements Progressable {
   @JoinColumn(name = "current_training_plan_id")
   private TrainingPlan currentTrainingPlan;
 
-  @OneToMany
+  @ManyToMany
   @JoinTable(name = "student_training_history", joinColumns = @JoinColumn(name = "student_id"), inverseJoinColumns = @JoinColumn(name = "training_plan_id"))
   private List<TrainingPlan> trainingHistory = new ArrayList<>();
 
@@ -89,35 +89,87 @@ public class Student extends Person implements Progressable {
     return "Student " + getName() + " is currently at level: " + trainingLevel;
   }
 
-  public User getUser()                        { return user; }
-  public void setUser(User user)               { this.user = user; }
+  public User getUser() {
+    return user;
+  }
 
-  public Integer getAge()                      { return age; }
-  public void setAge(Integer age)              { this.age = age; }
+  public void setUser(User user) {
+    this.user = user;
+  }
 
-  public Double getWeight()                    { return weight; }
-  public void setWeight(Double weight)         { this.weight = weight; }
+  public Integer getAge() {
+    return age;
+  }
 
-  public Double getHeight()                    { return height; }
-  public void setHeight(Double height)         { this.height = height; }
+  public void setAge(Integer age) {
+    this.age = age;
+  }
 
-  public Goal getGoal()                        { return goal; }
-  public void setGoal(Goal goal)               { this.goal = goal; }
+  public Double getWeight() {
+    return weight;
+  }
 
-  public TrainingLevel getTrainingLevel()      { return trainingLevel; }
+  public void setWeight(Double weight) {
+    this.weight = weight;
+  }
 
-  public PersonalTrainer getTrainer()          { return trainer; }
-  public void setTrainer(PersonalTrainer t)    { this.trainer = t; }
+  public Double getHeight() {
+    return height;
+  }
 
-  public TrainingPlan getCurrentTrainingPlan()              { return currentTrainingPlan; }
-  public void setCurrentTrainingPlan(TrainingPlan plan)     { this.currentTrainingPlan = plan; }
+  public void setHeight(Double height) {
+    this.height = height;
+  }
 
-  public List<TrainingPlan> getTrainingHistory()            { return trainingHistory; }
-  public void addToHistory(TrainingPlan plan)               { this.trainingHistory.add(plan); }
+  public Goal getGoal() {
+    return goal;
+  }
 
-  public byte[] getAvatarData()                             { return avatarData; }
-  public void setAvatarData(byte[] avatarData)              { this.avatarData = avatarData; }
+  public void setGoal(Goal goal) {
+    this.goal = goal;
+  }
 
-  public String getAvatarContentType()                      { return avatarContentType; }
-  public void setAvatarContentType(String avatarContentType){ this.avatarContentType = avatarContentType; }
+  public TrainingLevel getTrainingLevel() {
+    return trainingLevel;
+  }
+
+  public PersonalTrainer getTrainer() {
+    return trainer;
+  }
+
+  public void setTrainer(PersonalTrainer t) {
+    this.trainer = t;
+  }
+
+  public TrainingPlan getCurrentTrainingPlan() {
+    return currentTrainingPlan;
+  }
+
+  public void setCurrentTrainingPlan(TrainingPlan plan) {
+    this.currentTrainingPlan = plan;
+  }
+
+  public List<TrainingPlan> getTrainingHistory() {
+    return trainingHistory;
+  }
+
+  public void addToHistory(TrainingPlan plan) {
+    this.trainingHistory.add(plan);
+  }
+
+  public byte[] getAvatarData() {
+    return avatarData;
+  }
+
+  public void setAvatarData(byte[] avatarData) {
+    this.avatarData = avatarData;
+  }
+
+  public String getAvatarContentType() {
+    return avatarContentType;
+  }
+
+  public void setAvatarContentType(String avatarContentType) {
+    this.avatarContentType = avatarContentType;
+  }
 }

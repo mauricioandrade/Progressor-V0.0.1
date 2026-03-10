@@ -53,7 +53,7 @@ public class AuthService {
       studentRepository.save(student);
     } else if (role == Role.TRAINER) {
       PersonalTrainer trainer = new PersonalTrainer(null, request.name(), request.email(),
-          request.phone(), "PENDING", "PENDING");
+          request.phone(), null, null);
       trainer.setUser(user);
       trainerRepository.save(trainer);
     }
