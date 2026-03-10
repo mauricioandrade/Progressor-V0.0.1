@@ -17,21 +17,19 @@ public final class JwtService {
   private final SecretKey secretKey;
   private final long expirationMs;
 
-  public JwtService(
-      @Value("${jwt.secret}") String secret,
-      @Value("${jwt.expiration-ms}") long expirationMs
-  ) {
+  public JwtService(@Value("${jwt.secret}") String secret,
+      @Value("${jwt.expiration-ms}") long expirationMs) {
     this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     this.expirationMs = expirationMs;
   }
 
   public String generateToken(UserDetails userDetails) {
-    return Jwts.builder()
-        .subject(userDetails.getUsername())
-        .issuedAt(new Date())
-        .expiration(new Date(System.currentTimeMillis() + expirationMs))
-        .signWith(secretKey)
-        .compact();
+    String role = userDetails.getAuthorities().stream().findFirst()
+        .map(a -> a.getAuthority().replace("ROLE_", "")).orElse("STUDENT");
+
+    return Jwts.builder().subject(userDetails.getUsername()).claim("role", role)
+        .issuedAt(new Date()).expiration(new Date(System.currentTimeMillis() + expirationMs))
+        .signWith(secretKey).compact();
   }
 
   public boolean isTokenValid(String token, UserDetails userDetails) {
@@ -48,10 +46,7 @@ public final class JwtService {
   }
 
   private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-    final Claims claims = Jwts.parser()
-        .verifyWith(secretKey)
-        .build()
-        .parseSignedClaims(token)
+    final Claims claims = Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token)
         .getPayload();
     return claimsResolver.apply(claims);
   }

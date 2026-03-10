@@ -44,12 +44,24 @@ public class MeasurementService {
   }
 
   public List<Measurement> findAllForStudentById(Long studentId) {
+    studentRepository.findById(studentId)
+        .orElseThrow(() -> new StudentNotFoundException(studentId));
     return measurementRepository.findByStudentIdOrderByRecordedAtAsc(studentId);
   }
 
   public MeasurementEvolutionResponse getEvolution(UUID userId) {
     List<Measurement> list = findAllForStudent(userId);
+    return buildEvolution(list);
+  }
 
+  public MeasurementEvolutionResponse getEvolutionByStudentId(Long studentId) {
+    studentRepository.findById(studentId)
+        .orElseThrow(() -> new StudentNotFoundException(studentId));
+    List<Measurement> list = measurementRepository.findByStudentIdOrderByRecordedAtAsc(studentId);
+    return buildEvolution(list);
+  }
+
+  private MeasurementEvolutionResponse buildEvolution(List<Measurement> list) {
     if (list.size() < 2) {
       throw new IllegalStateException(
           "At least 2 measurements are required to calculate evolution.");

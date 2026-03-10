@@ -7,12 +7,20 @@ import dev.mauriciodev.Progressor_V001.domain.trainer.TrainerNotFoundException;
 import dev.mauriciodev.Progressor_V001.infrastructure.persistence.PersonalTrainerRepository;
 import dev.mauriciodev.Progressor_V001.infrastructure.persistence.StudentRepository;
 import jakarta.transaction.Transactional;
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class PersonalTrainerService {
+
+  private static final long MAX_SIZE_BYTES = 5 * 1024 * 1024;
+
+  private static final List<String> ALLOWED_TYPES = List.of(MediaType.IMAGE_JPEG_VALUE,
+      MediaType.IMAGE_PNG_VALUE, "image/webp");
 
   private final PersonalTrainerRepository personalTrainerRepository;
   private final StudentRepository studentRepository;
@@ -66,5 +74,23 @@ public class PersonalTrainerService {
   public List<Student> findMyStudents(UUID trainerUserId) {
     PersonalTrainer trainer = findByUserId(trainerUserId);
     return studentRepository.findByTrainerId(trainer.getId());
+  }
+
+  @Transactional
+  public void uploadAvatar(UUID userId, MultipartFile file) throws IOException {
+    if (file.isEmpty()) {
+      throw new IllegalArgumentException("File must not be empty.");
+    }
+    if (file.getSize() > MAX_SIZE_BYTES) {
+      throw new IllegalArgumentException("File exceeds the 5MB limit.");
+    }
+    String contentType = file.getContentType();
+    if (contentType == null || !ALLOWED_TYPES.contains(contentType)) {
+      throw new IllegalArgumentException("Only JPEG, PNG and WebP images are accepted.");
+    }
+    PersonalTrainer trainer = findByUserId(userId);
+    trainer.setAvatarData(file.getBytes());
+    trainer.setAvatarContentType(contentType);
+    personalTrainerRepository.save(trainer);
   }
 }
