@@ -59,7 +59,8 @@ public class TrainingPlanService {
         .orElseThrow(() -> new StudentNotFoundException(request.studentId()));
 
     List<Exercise> exercises = request.exercises().stream()
-        .map(e -> new Exercise(e.name(), e.videoUrl())).toList();
+        .map(e -> new Exercise(e.name(), e.videoUrl(), e.sets(), e.repetitions(), e.notes()))
+        .toList();
 
     TrainingPlan plan = new TrainingPlan(null, request.name(), request.durationWeeks(),
         request.level(), exercises);
@@ -83,7 +84,8 @@ public class TrainingPlanService {
     plan.setLevel(request.level());
 
     List<Exercise> newExercises = request.exercises().stream()
-        .map(e -> new Exercise(e.name(), e.videoUrl())).toList();
+        .map(e -> new Exercise(e.name(), e.videoUrl(), e.sets(), e.repetitions(), e.notes()))
+        .toList();
 
     plan.getExercises().clear();
     plan.getExercises().addAll(newExercises);

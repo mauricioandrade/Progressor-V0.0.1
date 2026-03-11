@@ -46,6 +46,15 @@ public class AuthService {
 
     Role role = request.role();
 
+    if (role == Role.TRAINER) {
+      if (request.cref() == null || request.cref().isBlank()) {
+        throw new IllegalArgumentException("CREF is required for Personal Trainers.");
+      }
+      if (trainerRepository.findByCref(request.cref()).isPresent()) {
+        throw new IllegalArgumentException("CREF is already registered.");
+      }
+    }
+
     User user = User.create(request.email(), passwordEncoder.encode(request.password()), role);
     userRepository.save(user);
 
@@ -56,7 +65,7 @@ public class AuthService {
       studentRepository.save(student);
     } else if (role == Role.TRAINER) {
       PersonalTrainer trainer = new PersonalTrainer(null, request.name(), request.email(),
-          request.phone(), null, null);
+          request.phone(), request.cref(), null);
       trainer.setUser(user);
       trainerRepository.save(trainer);
     }

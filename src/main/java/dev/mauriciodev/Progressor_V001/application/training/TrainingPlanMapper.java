@@ -9,8 +9,10 @@ public final class TrainingPlanMapper {
   }
 
   public static TrainingPlanResponse toResponse(TrainingPlan plan) {
-    List<ExerciseResponse> exercises = plan.getExercises().stream()
-        .map(e -> new ExerciseResponse(e.getName(), e.getVideoUrl())).toList();
+    List<ExerciseResponse> exercises = plan.getExercises().stream().map(
+        e -> new ExerciseResponse(e.getName(), e.getVideoUrl(), e.getSets(), e.getRepetitions(),
+            e.getNotes())).toList();
+
     return new TrainingPlanResponse(plan.getId(), plan.getName(), plan.getDurationWeeks(),
         plan.getLevel(), exercises);
   }

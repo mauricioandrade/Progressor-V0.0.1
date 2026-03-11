@@ -17,6 +17,7 @@ public class PersonalTrainer extends Person {
   @JoinColumn(name = "user_id", unique = true)
   private User user;
 
+  @Column(nullable = false, unique = true)
   private String cref;
 
   private String specialty;
