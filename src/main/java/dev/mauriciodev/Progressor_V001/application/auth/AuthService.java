@@ -11,9 +11,11 @@ import dev.mauriciodev.Progressor_V001.infrastructure.persistence.StudentReposit
 import dev.mauriciodev.Progressor_V001.infrastructure.persistence.UserRepository;
 import dev.mauriciodev.Progressor_V001.infrastructure.security.JwtService;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AuthService {
@@ -36,12 +38,13 @@ public class AuthService {
     this.authenticationManager = authenticationManager;
   }
 
+  @Transactional
   public AuthResponse register(RegisterRequest request) {
     if (userRepository.findByEmail(request.email()).isPresent()) {
       throw new IllegalArgumentException("Email is already in use.");
     }
 
-    Role role = request.role() != null ? request.role() : Role.STUDENT;
+    Role role = request.role();
 
     User user = User.create(request.email(), passwordEncoder.encode(request.password()), role);
     userRepository.save(user);
@@ -66,8 +69,10 @@ public class AuthService {
     try {
       authenticationManager.authenticate(
           new UsernamePasswordAuthenticationToken(request.email(), request.password()));
-    } catch (Exception e) {
-      throw new RuntimeException("Invalid credentials or user not found.", e);
+    } catch (BadCredentialsException _) {
+      throw new BadCredentialsException("Invalid email or password.");
+    } catch (Exception _) {
+      throw new RuntimeException("An error occurred during authentication.");
     }
 
     User user = userRepository.findByEmail(request.email())

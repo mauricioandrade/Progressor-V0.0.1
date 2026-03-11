@@ -1,5 +1,6 @@
 package dev.mauriciodev.Progressor_V001.domain.student;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import dev.mauriciodev.Progressor_V001.domain.person.Person;
 import dev.mauriciodev.Progressor_V001.domain.trainer.PersonalTrainer;
 import dev.mauriciodev.Progressor_V001.domain.training.TrainingPlan;
@@ -25,6 +26,7 @@ import java.util.List;
 @Table(name = "students")
 public class Student extends Person implements Progressable {
 
+  @JsonIgnore
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id", unique = true)
   private User user;
@@ -47,10 +49,12 @@ public class Student extends Person implements Progressable {
   @JoinColumn(name = "current_training_plan_id")
   private TrainingPlan currentTrainingPlan;
 
-  @ManyToMany
+  @JsonIgnore
+  @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(name = "student_training_history", joinColumns = @JoinColumn(name = "student_id"), inverseJoinColumns = @JoinColumn(name = "training_plan_id"))
   private List<TrainingPlan> trainingHistory = new ArrayList<>();
 
+  @JsonIgnore
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "trainer_id")
   private PersonalTrainer trainer;
