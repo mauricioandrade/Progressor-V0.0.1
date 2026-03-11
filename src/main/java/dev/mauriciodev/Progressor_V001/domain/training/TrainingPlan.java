@@ -26,7 +26,7 @@ public class TrainingPlan {
   @Column(nullable = false)
   private String name;
 
-  @Column(nullable = false)
+  @Column(name = "duration_weeks", nullable = false)
   private Integer durationWeeks;
 
   @Enumerated(EnumType.STRING)
@@ -34,7 +34,10 @@ public class TrainingPlan {
   private TrainingLevel level;
 
   @ElementCollection(fetch = FetchType.EAGER)
-  @CollectionTable(name = "training_plan_exercises", joinColumns = @JoinColumn(name = "training_plan_id"))
+  @CollectionTable(
+      name = "training_plan_exercises",
+      joinColumns = @JoinColumn(name = "training_plan_id")
+  )
   private List<Exercise> exercises;
 
   protected TrainingPlan() {
@@ -57,7 +60,6 @@ public class TrainingPlan {
     return name;
   }
 
-  // --- SETTERS ADICIONADOS AQUI ---
   public void setName(String name) {
     this.name = name;
   }

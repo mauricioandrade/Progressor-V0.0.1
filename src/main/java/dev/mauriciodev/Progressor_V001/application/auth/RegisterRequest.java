@@ -16,6 +16,8 @@ public record RegisterRequest(
 
     String phone,
 
+    String cref,
+
     @NotNull(message = "Role is required") Role role) {
 
 }

@@ -8,5 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface PersonalTrainerRepository extends JpaRepository<PersonalTrainer, Long> {
 
   Optional<PersonalTrainer> findByUserId(UUID userId);
+
+  Optional<PersonalTrainer> findByCref(String cref);
 }
+
 
