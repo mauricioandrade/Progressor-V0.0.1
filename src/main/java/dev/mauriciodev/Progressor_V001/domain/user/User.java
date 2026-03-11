@@ -33,7 +33,7 @@ public final class User implements UserDetails {
   @Column(nullable = false)
   private Role role;
 
-  // JPA exige construtor sem args
+
   protected User() {
   }
 
@@ -47,8 +47,6 @@ public final class User implements UserDetails {
     return new User(email, password, role);
   }
 
-  // --- UserDetails ---
-
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
     return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
@@ -61,10 +59,8 @@ public final class User implements UserDetails {
 
   @Override
   public String getUsername() {
-    return email; // email é o identificador único
+    return email;
   }
-
-  // Getters
 
   public UUID getId() {
     return id;

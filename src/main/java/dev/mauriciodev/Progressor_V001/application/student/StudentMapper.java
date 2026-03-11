@@ -9,10 +9,14 @@ public final class StudentMapper {
   }
 
   public static StudentResponse toResponse(Student student) {
+    if (student == null) {
+      return null;
+    }
     return new StudentResponse(student.getId(), student.getName(), student.getEmail(),
         student.getPhone(), student.getAge(), student.getWeight(), student.getHeight(),
         student.getGoal(), student.getTrainingLevel(),
         student.getCurrentTrainingPlan() != null ? TrainingPlanMapper.toResponse(
-            student.getCurrentTrainingPlan()) : null);
+            student.getCurrentTrainingPlan()) : null, student.getAvatarData(),
+        student.getAvatarContentType());
   }
 }
