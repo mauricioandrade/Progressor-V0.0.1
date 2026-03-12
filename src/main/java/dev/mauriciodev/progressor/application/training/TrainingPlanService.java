@@ -45,12 +45,9 @@ public class TrainingPlanService {
     TrainingPlan plan = findById(planId);
     Student student = studentService.findById(studentId);
 
-    if (student.getCurrentTrainingPlan() != null) {
-      student.addToHistory(student.getCurrentTrainingPlan());
-    }
+    student.assignTrainingPlan(plan);
 
-    student.setCurrentTrainingPlan(plan);
-    return studentService.register(student);
+    return studentRepository.save(student);
   }
 
   @Transactional
@@ -66,12 +63,9 @@ public class TrainingPlanService {
         request.level(), exercises);
     TrainingPlan saved = trainingPlanRepository.save(plan);
 
-    if (student.getCurrentTrainingPlan() != null) {
-      student.addToHistory(student.getCurrentTrainingPlan());
-    }
-
-    student.setCurrentTrainingPlan(saved);
+    student.assignTrainingPlan(saved);
     studentRepository.save(student);
+
     return saved;
   }
 
@@ -102,10 +96,7 @@ public class TrainingPlanService {
       boolean modified = false;
       if (student.getCurrentTrainingPlan() != null && student.getCurrentTrainingPlan().getId()
           .equals(id)) {
-        student.setCurrentTrainingPlan(null);
-        modified = true;
-      }
-      if (student.getTrainingHistory().removeIf(p -> p.getId().equals(id))) {
+        student.assignTrainingPlan(null); // Usando o método de domínio
         modified = true;
       }
       if (modified) {

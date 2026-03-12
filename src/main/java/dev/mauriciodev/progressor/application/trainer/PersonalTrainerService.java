@@ -18,7 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class PersonalTrainerService {
 
   private static final long MAX_SIZE_BYTES = 5 * 1024 * 1024;
-
   private static final List<String> ALLOWED_TYPES = List.of(MediaType.IMAGE_JPEG_VALUE,
       MediaType.IMAGE_PNG_VALUE, "image/webp");
 
@@ -31,6 +30,7 @@ public class PersonalTrainerService {
     this.studentRepository = studentRepository;
   }
 
+  @Transactional
   public PersonalTrainer register(PersonalTrainer personalTrainer) {
     return personalTrainerRepository.save(personalTrainer);
   }
@@ -54,6 +54,7 @@ public class PersonalTrainerService {
     PersonalTrainer trainer = findByUserId(trainerUserId);
     Student student = studentRepository.findById(studentId)
         .orElseThrow(() -> new StudentNotFoundException(studentId));
+
     student.setTrainer(trainer);
     return studentRepository.save(student);
   }
@@ -63,14 +64,15 @@ public class PersonalTrainerService {
     PersonalTrainer trainer = findByUserId(trainerUserId);
     Student student = studentRepository.findById(studentId)
         .orElseThrow(() -> new StudentNotFoundException(studentId));
+
     if (student.getTrainer() == null || !student.getTrainer().getId().equals(trainer.getId())) {
       throw new IllegalArgumentException("Student is not linked to this trainer.");
     }
+
     student.setTrainer(null);
     return studentRepository.save(student);
   }
 
-  @Transactional
   public List<Student> findMyStudents(UUID trainerUserId) {
     PersonalTrainer trainer = findByUserId(trainerUserId);
     return studentRepository.findByTrainerId(trainer.getId());
@@ -78,6 +80,15 @@ public class PersonalTrainerService {
 
   @Transactional
   public void uploadAvatar(UUID userId, MultipartFile file) throws IOException {
+    validateAvatar(file);
+    PersonalTrainer trainer = findByUserId(userId);
+
+    trainer.setAvatarData(file.getBytes());
+    trainer.setAvatarContentType(file.getContentType());
+    personalTrainerRepository.save(trainer);
+  }
+
+  private void validateAvatar(MultipartFile file) {
     if (file.isEmpty()) {
       throw new IllegalArgumentException("File must not be empty.");
     }
@@ -88,9 +99,5 @@ public class PersonalTrainerService {
     if (contentType == null || !ALLOWED_TYPES.contains(contentType)) {
       throw new IllegalArgumentException("Only JPEG, PNG and WebP images are accepted.");
     }
-    PersonalTrainer trainer = findByUserId(userId);
-    trainer.setAvatarData(file.getBytes());
-    trainer.setAvatarContentType(contentType);
-    personalTrainerRepository.save(trainer);
   }
 }

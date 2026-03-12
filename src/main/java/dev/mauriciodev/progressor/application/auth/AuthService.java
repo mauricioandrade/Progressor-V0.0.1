@@ -59,8 +59,8 @@ public class AuthService {
     userRepository.save(user);
 
     if (role == Role.STUDENT) {
-      Student student = new Student(null, request.name(), request.email(), request.phone(), null,
-          null, null, Goal.CONDITIONING, TrainingLevel.BEGINNER);
+      Student student = new Student(null, request.name(), request.email(), request.phone(),
+          request.birthDate(), 1.0, 1.0, Goal.CONDITIONING, TrainingLevel.BEGINNER);
       student.setUser(user);
       studentRepository.save(student);
     } else if (role == Role.TRAINER) {

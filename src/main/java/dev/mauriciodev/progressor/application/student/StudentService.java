@@ -3,7 +3,6 @@ package dev.mauriciodev.progressor.application.student;
 import dev.mauriciodev.progressor.domain.student.Student;
 import dev.mauriciodev.progressor.domain.student.StudentNotFoundException;
 import dev.mauriciodev.progressor.domain.training.TrainingPlan;
-import dev.mauriciodev.progressor.domain.shared.TrainingLevel;
 import dev.mauriciodev.progressor.infrastructure.persistence.StudentRepository;
 import dev.mauriciodev.progressor.infrastructure.persistence.TrainingPlanRepository;
 import jakarta.transaction.Transactional;
@@ -18,7 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class StudentService {
 
   private static final long MAX_SIZE_BYTES = 5 * 1024 * 1024;
-
   private static final List<String> ALLOWED_TYPES = List.of(MediaType.IMAGE_JPEG_VALUE,
       MediaType.IMAGE_PNG_VALUE, "image/webp");
 
@@ -31,13 +29,15 @@ public class StudentService {
     this.trainingPlanRepository = trainingPlanRepository;
   }
 
+  @Transactional
+  public Student register(Student student) {
+    return studentRepository.save(student);
+  }
+
+  @Transactional
   public Student findByUserId(UUID userId) {
     return studentRepository.findByUserId(userId)
         .orElseThrow(() -> new StudentNotFoundException(userId));
-  }
-
-  public Student register(Student student) {
-    return studentRepository.save(student);
   }
 
   @Transactional
@@ -59,22 +59,13 @@ public class StudentService {
   @Transactional
   public Student progress(Long id) {
     Student student = findById(id);
-
-    if (student.getTrainingLevel() == TrainingLevel.ADVANCED) {
-      throw new IllegalStateException("Student is already at the highest level: ADVANCED");
-    }
-
-    if (student.getCurrentTrainingPlan() != null) {
-      student.addToHistory(student.getCurrentTrainingPlan());
-    }
-
     student.evolve();
 
     List<TrainingPlan> plansForNewLevel = trainingPlanRepository.findByLevel(
         student.getTrainingLevel());
 
     if (!plansForNewLevel.isEmpty()) {
-      student.setCurrentTrainingPlan(plansForNewLevel.get(0));
+      student.assignTrainingPlan(plansForNewLevel.get(0));
     }
 
     return studentRepository.save(student);
@@ -90,14 +81,14 @@ public class StudentService {
     if (request.phone() != null) {
       student.setPhone(request.phone());
     }
-    if (request.age() != null) {
-      student.setAge(request.age());
+    if (request.birthDate() != null) {
+      student.updateBirthDate(request.birthDate());
     }
     if (request.weight() != null) {
-      student.setWeight(request.weight());
+      student.updateWeight(request.weight());
     }
     if (request.height() != null) {
-      student.setHeight(request.height());
+      student.updateHeight(request.height());
     }
     if (request.goal() != null) {
       student.setGoal(request.goal());
@@ -108,22 +99,27 @@ public class StudentService {
 
   @Transactional
   public void uploadAvatar(UUID userId, MultipartFile file) throws IOException {
+    validateAvatar(file);
+    Student student = findByUserId(userId);
+    student.setAvatar(file.getBytes(), file.getContentType());
+    studentRepository.save(student);
+  }
+
+  private void validateAvatar(MultipartFile file) {
     if (file.isEmpty()) {
       throw new IllegalArgumentException("File must not be empty.");
     }
     if (file.getSize() > MAX_SIZE_BYTES) {
-      throw new IllegalArgumentException("File exceeds the 5MB limit.");
+      throw new IllegalArgumentException("File exceeds 5MB.");
     }
+
     String contentType = file.getContentType();
     if (contentType == null || !ALLOWED_TYPES.contains(contentType)) {
-      throw new IllegalArgumentException("Only JPEG, PNG and WebP images are accepted.");
+      throw new IllegalArgumentException("Only JPEG, PNG and WebP are accepted.");
     }
-    Student student = findByUserId(userId);
-    student.setAvatarData(file.getBytes());
-    student.setAvatarContentType(contentType);
-    studentRepository.save(student);
   }
 
+  @Transactional
   public Student findAvatarByUserId(UUID userId) {
     return findByUserId(userId);
   }
