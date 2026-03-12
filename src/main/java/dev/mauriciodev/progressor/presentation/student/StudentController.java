@@ -45,18 +45,14 @@ public class StudentController {
 
   @PostMapping
   @Operation(summary = "Register a new student")
-  @ApiResponses({@ApiResponse(responseCode = "201", description = "Student created successfully"),
-      @ApiResponse(responseCode = "400", description = "Invalid request data")})
   public ResponseEntity<StudentResponse> register(@Valid @RequestBody StudentRequest request) {
-    Student student = new Student(null, request.name(), request.email(), request.phone(),
-        request.age(), request.weight(), request.height(), request.goal(), request.trainingLevel());
+    Student student = StudentMapper.toEntity(request);
     Student saved = studentService.register(student);
     return ResponseEntity.status(HttpStatus.CREATED).body(StudentMapper.toResponse(saved));
   }
 
   @GetMapping
   @Operation(summary = "List all students")
-  @ApiResponse(responseCode = "200", description = "Students listed successfully")
   public ResponseEntity<List<StudentResponse>> findAll() {
     List<StudentResponse> response = studentService.findAll().stream()
         .map(StudentMapper::toResponse).toList();
@@ -65,42 +61,20 @@ public class StudentController {
 
   @GetMapping("/{id}")
   @Operation(summary = "Find student by ID")
-  @ApiResponses({@ApiResponse(responseCode = "200", description = "Student found"),
-      @ApiResponse(responseCode = "404", description = "Student not found")})
   public ResponseEntity<StudentResponse> findById(@PathVariable Long id) {
-    return ResponseEntity.ok(StudentMapper.toResponse(studentService.findById(id)));
+    Student student = studentService.findById(id);
+    return ResponseEntity.ok(StudentMapper.toResponse(student));
   }
 
   @PatchMapping("/{id}/progress")
-  @Operation(summary = "Progress student level")
-  @ApiResponses({
-      @ApiResponse(responseCode = "200", description = "Student progressed successfully"),
-      @ApiResponse(responseCode = "400", description = "Student is already at the maximum level"),
-      @ApiResponse(responseCode = "404", description = "Student not found")})
+  @Operation(summary = "Progress student level and assign new plan")
   public ResponseEntity<StudentResponse> progress(@PathVariable Long id) {
-    try {
-      Student student = studentService.progress(id);
-      return ResponseEntity.ok(StudentMapper.toResponse(student));
-    } catch (IllegalStateException e) {
-      return ResponseEntity.badRequest().build();
-    }
-  }
-
-  @GetMapping("/{id}/history")
-  @Operation(summary = "Get training history")
-  @ApiResponses({@ApiResponse(responseCode = "200", description = "History retrieved successfully"),
-      @ApiResponse(responseCode = "404", description = "Student not found")})
-  public ResponseEntity<List<TrainingPlanResponse>> getHistory(@PathVariable Long id) {
-    Student student = studentService.findById(id);
-    List<TrainingPlanResponse> history = student.getTrainingHistory().stream()
-        .map(TrainingPlanMapper::toResponse).toList();
-    return ResponseEntity.ok(history);
+    Student student = studentService.progress(id);
+    return ResponseEntity.ok(StudentMapper.toResponse(student));
   }
 
   @GetMapping("/me")
   @Operation(summary = "Get own profile")
-  @ApiResponses({@ApiResponse(responseCode = "200", description = "Profile retrieved successfully"),
-      @ApiResponse(responseCode = "404", description = "Student not found")})
   public ResponseEntity<StudentResponse> getMe(Authentication authentication) {
     User user = (User) authentication.getPrincipal();
     Student student = studentService.findByUserId(user.getId());
@@ -109,8 +83,6 @@ public class StudentController {
 
   @PutMapping("/me")
   @Operation(summary = "Update own profile")
-  @ApiResponses({@ApiResponse(responseCode = "200", description = "Profile updated successfully"),
-      @ApiResponse(responseCode = "404", description = "Student not found")})
   public ResponseEntity<StudentResponse> updateMe(@Valid @RequestBody StudentUpdateRequest request,
       Authentication authentication) {
     User user = (User) authentication.getPrincipal();
@@ -119,10 +91,7 @@ public class StudentController {
   }
 
   @PatchMapping("/me/progress")
-  @Operation(summary = "Evolve student level")
-  @ApiResponses({@ApiResponse(responseCode = "200", description = "Level evolved successfully"),
-      @ApiResponse(responseCode = "400", description = "Student is already at the highest level"),
-      @ApiResponse(responseCode = "404", description = "Student not found")})
+  @Operation(summary = "Evolve own student level")
   public ResponseEntity<StudentResponse> evolveProgress(Authentication authentication) {
     User user = (User) authentication.getPrincipal();
     Student updated = studentService.evolveProgress(user.getId());
@@ -130,35 +99,28 @@ public class StudentController {
   }
 
   @PostMapping(value = "/me/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  @Operation(summary = "Upload profile avatar", description = "Accepts JPEG, PNG or WebP up to 5MB")
-  @ApiResponses({@ApiResponse(responseCode = "204", description = "Avatar uploaded successfully"),
-      @ApiResponse(responseCode = "400", description = "Invalid file type or size")})
+  @Operation(summary = "Upload profile avatar")
   public ResponseEntity<Void> uploadAvatar(@RequestParam("file") MultipartFile file,
-      Authentication authentication) {
+      Authentication authentication) throws IOException {
     User user = (User) authentication.getPrincipal();
-    try {
-      studentService.uploadAvatar(user.getId(), file);
-      return ResponseEntity.noContent().build();
-    } catch (IllegalArgumentException e) {
-      return ResponseEntity.badRequest().build();
-    } catch (IOException e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-    }
+    studentService.uploadAvatar(user.getId(), file);
+    return ResponseEntity.noContent().build();
   }
 
   @GetMapping("/me/avatar")
-  @Operation(summary = "Get profile avatar", description = "Returns the avatar image bytes")
-  @ApiResponses({@ApiResponse(responseCode = "200", description = "Avatar returned"),
-      @ApiResponse(responseCode = "404", description = "No avatar found")})
+  @Operation(summary = "Get profile avatar")
   public ResponseEntity<byte[]> getAvatar(Authentication authentication) {
     User user = (User) authentication.getPrincipal();
     Student student = studentService.findAvatarByUserId(user.getId());
+
     if (student.getAvatarData() == null) {
       return ResponseEntity.notFound().build();
     }
+
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.parseMediaType(student.getAvatarContentType()));
     headers.setContentLength(student.getAvatarData().length);
+
     return new ResponseEntity<>(student.getAvatarData(), headers, HttpStatus.OK);
   }
 }
