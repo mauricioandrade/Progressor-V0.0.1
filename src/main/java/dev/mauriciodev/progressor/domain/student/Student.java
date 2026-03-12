@@ -19,6 +19,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,10 +33,10 @@ public class Student extends Person implements Progressable {
   @JoinColumn(name = "user_id", unique = true)
   private User user;
 
-  private Integer age;
+  @Column(name = "birth_date")
+  private LocalDate birthDate;
 
   private Double weight;
-
   private Double height;
 
   @Enumerated(EnumType.STRING)
@@ -45,12 +47,12 @@ public class Student extends Person implements Progressable {
   @Column(nullable = false)
   private TrainingLevel trainingLevel;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "current_training_plan_id")
   private TrainingPlan currentTrainingPlan;
 
   @JsonIgnore
-  @ManyToMany(fetch = FetchType.EAGER)
+  @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(name = "student_training_history", joinColumns = @JoinColumn(name = "student_id"), inverseJoinColumns = @JoinColumn(name = "training_plan_id"))
   private List<TrainingPlan> trainingHistory = new ArrayList<>();
 
@@ -69,16 +71,22 @@ public class Student extends Person implements Progressable {
     super(null, null, null, null);
   }
 
-  public Student(Long id, String name, String email, String phone, Integer age, Double weight,
-      Double height, Goal goal, TrainingLevel trainingLevel) {
+  public Student(Long id, String name, String email, String phone, LocalDate birthDate,
+      Double weight, Double height, Goal goal, TrainingLevel trainingLevel) {
     super(id, name, email, phone);
-    this.age = age;
-    this.weight = weight;
-    this.height = height;
+    updateBirthDate(birthDate);
+    updateWeight(weight);
+    updateHeight(height);
     this.goal = goal;
     this.trainingLevel = trainingLevel;
   }
 
+  // --- GETTERS QUE ESTAVAM FALTANDO ---
+  public PersonalTrainer getTrainer() {
+    return trainer;
+  }
+
+  // --- MÉTODOS DE DOMÍNIO ---
   @Override
   public void evolve() {
     this.trainingLevel = switch (this.trainingLevel) {
@@ -88,41 +96,56 @@ public class Student extends Person implements Progressable {
     };
   }
 
-  @Override
-  public String evaluateProgress() {
-    return "Student " + getName() + " is currently at level: " + trainingLevel;
-  }
-
-  public User getUser() {
-    return user;
-  }
-
-  public void setUser(User user) {
-    this.user = user;
-  }
-
   public Integer getAge() {
-    return age;
+    if (this.birthDate == null) {
+      return null;
+    }
+    return Period.between(this.birthDate, LocalDate.now()).getYears();
   }
 
-  public void setAge(Integer age) {
-    this.age = age;
+  public void updateBirthDate(LocalDate birthDate) {
+    if (birthDate == null || birthDate.isAfter(LocalDate.now())) {
+      throw new IllegalArgumentException("Invalid birth date");
+    }
+    int calculatedAge = Period.between(birthDate, LocalDate.now()).getYears();
+    if (calculatedAge < 10 || calculatedAge > 120) {
+      throw new IllegalArgumentException("Student must be between 10 and 120 years old");
+    }
+    this.birthDate = birthDate;
+  }
+
+  public void updateWeight(Double weight) {
+    if (weight == null || weight <= 0) {
+      throw new IllegalArgumentException("Weight must be positive");
+    }
+    this.weight = weight;
+  }
+
+  public void updateHeight(Double height) {
+    if (height == null || height <= 0) {
+      throw new IllegalArgumentException("Height must be positive");
+    }
+    this.height = height;
+  }
+
+  public void assignTrainingPlan(TrainingPlan plan) {
+    this.currentTrainingPlan = plan;
+    if (plan != null && !trainingHistory.contains(plan)) {
+      trainingHistory.add(plan);
+    }
+  }
+
+  // --- OUTROS GETTERS E SETTERS ---
+  public LocalDate getBirthDate() {
+    return birthDate;
   }
 
   public Double getWeight() {
     return weight;
   }
 
-  public void setWeight(Double weight) {
-    this.weight = weight;
-  }
-
   public Double getHeight() {
     return height;
-  }
-
-  public void setHeight(Double height) {
-    this.height = height;
   }
 
   public Goal getGoal() {
@@ -137,43 +160,41 @@ public class Student extends Person implements Progressable {
     return trainingLevel;
   }
 
-  public PersonalTrainer getTrainer() {
-    return trainer;
-  }
-
-  public void setTrainer(PersonalTrainer t) {
-    this.trainer = t;
-  }
-
   public TrainingPlan getCurrentTrainingPlan() {
     return currentTrainingPlan;
   }
 
-  public void setCurrentTrainingPlan(TrainingPlan plan) {
-    this.currentTrainingPlan = plan;
-  }
-
   public List<TrainingPlan> getTrainingHistory() {
-    return trainingHistory;
-  }
-
-  public void addToHistory(TrainingPlan plan) {
-    this.trainingHistory.add(plan);
+    return List.copyOf(trainingHistory);
   }
 
   public byte[] getAvatarData() {
     return avatarData;
   }
 
-  public void setAvatarData(byte[] avatarData) {
-    this.avatarData = avatarData;
-  }
-
   public String getAvatarContentType() {
     return avatarContentType;
   }
 
-  public void setAvatarContentType(String avatarContentType) {
-    this.avatarContentType = avatarContentType;
+  public User getUser() {
+    return user;
+  }
+
+  public void setUser(User user) {
+    this.user = user;
+  }
+
+  public void setTrainer(PersonalTrainer t) {
+    this.trainer = t;
+  }
+
+  public void setAvatar(byte[] data, String contentType) {
+    this.avatarData = data;
+    this.avatarContentType = contentType;
+  }
+
+  @Override
+  public String evaluateProgress() {
+    return "Student " + getName() + " is level: " + trainingLevel;
   }
 }
