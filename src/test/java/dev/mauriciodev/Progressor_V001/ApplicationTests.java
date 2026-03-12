@@ -1,4 +1,4 @@
-package dev.mauriciodev.Progressor_V001;
+package dev.mauriciodev.progressor;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
