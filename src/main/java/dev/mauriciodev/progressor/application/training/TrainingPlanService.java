@@ -55,9 +55,7 @@ public class TrainingPlanService {
     Student student = studentRepository.findById(request.studentId())
         .orElseThrow(() -> new StudentNotFoundException(request.studentId()));
 
-    List<Exercise> exercises = request.exercises().stream()
-        .map(e -> new Exercise(e.name(), e.videoUrl(), e.sets(), e.repetitions(), e.notes()))
-        .toList();
+    List<Exercise> exercises = toExercises(request.exercises());
 
     TrainingPlan plan = new TrainingPlan(null, request.name(), request.durationWeeks(),
         request.level(), exercises);
@@ -72,36 +70,19 @@ public class TrainingPlanService {
   @Transactional
   public TrainingPlan update(Long id, TrainingPlanRequest request) {
     TrainingPlan plan = findById(id);
-
-    plan.setName(request.name());
-    plan.setDurationWeeks(request.durationWeeks());
-    plan.setLevel(request.level());
-
-    List<Exercise> newExercises = request.exercises().stream()
-        .map(e -> new Exercise(e.name(), e.videoUrl(), e.sets(), e.repetitions(), e.notes()))
-        .toList();
-
-    plan.getExercises().clear();
-    plan.getExercises().addAll(newExercises);
-
+    List<Exercise> newExercises = toExercises(request.exercises());
+    plan.update(request.name(), request.durationWeeks(), request.level(), newExercises);
     return trainingPlanRepository.save(plan);
   }
 
   @Transactional
   public void delete(Long id) {
     TrainingPlan plan = findById(id);
-    List<Student> students = studentRepository.findAll();
+    List<Student> affected = studentRepository.findByCurrentTrainingPlanId(id);
 
-    for (Student student : students) {
-      boolean modified = false;
-      if (student.getCurrentTrainingPlan() != null && student.getCurrentTrainingPlan().getId()
-          .equals(id)) {
-        student.assignTrainingPlan(null); // Usando o método de domínio
-        modified = true;
-      }
-      if (modified) {
-        studentRepository.save(student);
-      }
+    for (Student student : affected) {
+      student.assignTrainingPlan(null);
+      studentRepository.save(student);
     }
 
     trainingPlanRepository.delete(plan);
@@ -130,5 +111,11 @@ public class TrainingPlanService {
     Student student = studentRepository.findByUserId(userId)
         .orElseThrow(() -> new StudentNotFoundException(userId));
     return student.getTrainingHistory();
+  }
+
+  private List<Exercise> toExercises(List<ExerciseRequest> requests) {
+    return requests.stream()
+        .map(e -> new Exercise(e.name(), e.videoUrl(), e.sets(), e.repetitions(), e.notes()))
+        .toList();
   }
 }

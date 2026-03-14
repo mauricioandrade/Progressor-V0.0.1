@@ -13,6 +13,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Entity
@@ -34,22 +36,48 @@ public class TrainingPlan {
   private TrainingLevel level;
 
   @ElementCollection(fetch = FetchType.EAGER)
-  @CollectionTable(
-      name = "training_plan_exercises",
-      joinColumns = @JoinColumn(name = "training_plan_id")
-  )
-  private List<Exercise> exercises;
+  @CollectionTable(name = "training_plan_exercises", joinColumns = @JoinColumn(name = "training_plan_id"))
+  private List<Exercise> exercises = new ArrayList<>();
 
   protected TrainingPlan() {
   }
 
   public TrainingPlan(Long id, String name, Integer durationWeeks, TrainingLevel level,
       List<Exercise> exercises) {
+    if (name == null || name.isBlank()) {
+      throw new IllegalArgumentException("Training plan name must not be blank");
+    }
+    if (durationWeeks == null || durationWeeks <= 0) {
+      throw new IllegalArgumentException("Duration must be a positive number of weeks");
+    }
+    if (level == null) {
+      throw new IllegalArgumentException("Training level must not be null");
+    }
     this.id = id;
     this.name = name;
     this.durationWeeks = durationWeeks;
     this.level = level;
-    this.exercises = exercises;
+    this.exercises = exercises != null ? new ArrayList<>(exercises) : new ArrayList<>();
+  }
+
+  public void update(String name, Integer durationWeeks, TrainingLevel level,
+      List<Exercise> exercises) {
+    if (name == null || name.isBlank()) {
+      throw new IllegalArgumentException("Training plan name must not be blank");
+    }
+    if (durationWeeks == null || durationWeeks <= 0) {
+      throw new IllegalArgumentException("Duration must be a positive number of weeks");
+    }
+    if (level == null) {
+      throw new IllegalArgumentException("Training level must not be null");
+    }
+    if (exercises == null) {
+      throw new IllegalArgumentException("Exercises list must not be null");
+    }
+    this.name = name;
+    this.durationWeeks = durationWeeks;
+    this.level = level;
+    this.exercises = new ArrayList<>(exercises);
   }
 
   public Long getId() {
@@ -60,31 +88,15 @@ public class TrainingPlan {
     return name;
   }
 
-  public void setName(String name) {
-    this.name = name;
-  }
-
   public Integer getDurationWeeks() {
     return durationWeeks;
-  }
-
-  public void setDurationWeeks(Integer durationWeeks) {
-    this.durationWeeks = durationWeeks;
   }
 
   public TrainingLevel getLevel() {
     return level;
   }
 
-  public void setLevel(TrainingLevel level) {
-    this.level = level;
-  }
-
   public List<Exercise> getExercises() {
-    return exercises;
-  }
-
-  public void setExercises(List<Exercise> exercises) {
-    this.exercises = exercises;
+    return Collections.unmodifiableList(exercises);
   }
 }
