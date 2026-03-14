@@ -15,6 +15,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -69,9 +70,11 @@ public class MeasurementController {
   }
 
   @GetMapping("/students/{studentId}")
+  @PreAuthorize("hasAnyRole('TRAINER', 'ADMIN')")
   @Operation(summary = "List measurements for a student (trainer access)")
   @ApiResponses({
       @ApiResponse(responseCode = "200", description = "Measurements listed successfully"),
+      @ApiResponse(responseCode = "403", description = "Access denied"),
       @ApiResponse(responseCode = "404", description = "Student not found")})
   public ResponseEntity<List<MeasurementResponse>> findByStudent(@PathVariable Long studentId) {
     List<MeasurementResponse> response = measurementService.findAllForStudentById(studentId)
@@ -80,9 +83,11 @@ public class MeasurementController {
   }
 
   @GetMapping("/students/{studentId}/evolution")
+  @PreAuthorize("hasAnyRole('TRAINER', 'ADMIN')")
   @Operation(summary = "Get evolution for a student (trainer access)")
   @ApiResponses({
       @ApiResponse(responseCode = "200", description = "Evolution calculated successfully"),
+      @ApiResponse(responseCode = "403", description = "Access denied"),
       @ApiResponse(responseCode = "400", description = "Not enough measurements"),
       @ApiResponse(responseCode = "404", description = "Student not found")})
   public ResponseEntity<MeasurementEvolutionResponse> getEvolutionByStudent(

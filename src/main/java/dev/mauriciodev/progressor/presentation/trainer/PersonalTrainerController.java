@@ -20,6 +20,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,7 +44,8 @@ public class PersonalTrainerController {
   }
 
   @GetMapping("/me")
-  @Operation(summary = "Get own profile", description = "Returns the authenticated trainer's profile")
+  @PreAuthorize("hasRole('TRAINER')")
+  @Operation(summary = "Get own profile")
   @ApiResponses({@ApiResponse(responseCode = "200", description = "Profile retrieved successfully"),
       @ApiResponse(responseCode = "404", description = "Trainer not found")})
   public ResponseEntity<TrainerResponse> getMe(Authentication authentication) {
@@ -53,7 +55,8 @@ public class PersonalTrainerController {
   }
 
   @PostMapping(value = "/me/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  @Operation(summary = "Upload trainer avatar", description = "Accepts JPEG, PNG or WebP up to 5MB")
+  @PreAuthorize("hasRole('TRAINER')")
+  @Operation(summary = "Upload trainer avatar")
   @ApiResponses({@ApiResponse(responseCode = "204", description = "Avatar uploaded successfully"),
       @ApiResponse(responseCode = "400", description = "Invalid file type or size")})
   public ResponseEntity<Void> uploadAvatar(@RequestParam("file") MultipartFile file,
@@ -70,7 +73,8 @@ public class PersonalTrainerController {
   }
 
   @GetMapping("/me/avatar")
-  @Operation(summary = "Get trainer avatar", description = "Returns the trainer's avatar image bytes")
+  @PreAuthorize("hasRole('TRAINER')")
+  @Operation(summary = "Get trainer avatar")
   @ApiResponses({@ApiResponse(responseCode = "200", description = "Avatar returned"),
       @ApiResponse(responseCode = "404", description = "No avatar found")})
   public ResponseEntity<byte[]> getAvatar(Authentication authentication) {
@@ -86,7 +90,8 @@ public class PersonalTrainerController {
   }
 
   @GetMapping("/me/students")
-  @Operation(summary = "List supervised students", description = "Returns all students linked to the authenticated trainer")
+  @PreAuthorize("hasRole('TRAINER')")
+  @Operation(summary = "List supervised students")
   @ApiResponse(responseCode = "200", description = "Students listed successfully")
   public ResponseEntity<List<StudentResponse>> getMyStudents(Authentication authentication) {
     User user = (User) authentication.getPrincipal();
@@ -96,7 +101,8 @@ public class PersonalTrainerController {
   }
 
   @PostMapping("/me/students/{studentId}")
-  @Operation(summary = "Link student to trainer", description = "Assigns a student to the authenticated trainer")
+  @PreAuthorize("hasRole('TRAINER')")
+  @Operation(summary = "Link student to trainer")
   @ApiResponses({@ApiResponse(responseCode = "200", description = "Student linked successfully"),
       @ApiResponse(responseCode = "404", description = "Student or trainer not found")})
   public ResponseEntity<StudentResponse> linkStudent(@PathVariable Long studentId,
@@ -107,6 +113,7 @@ public class PersonalTrainerController {
   }
 
   @DeleteMapping("/me/students/{studentId}")
+  @PreAuthorize("hasRole('TRAINER')")
   @Operation(summary = "Unlink student from trainer")
   @ApiResponses({@ApiResponse(responseCode = "200", description = "Student unlinked successfully"),
       @ApiResponse(responseCode = "404", description = "Student or trainer not found")})
@@ -118,9 +125,11 @@ public class PersonalTrainerController {
   }
 
   @PostMapping
+  @PreAuthorize("hasRole('ADMIN')")
   @Operation(summary = "Register a personal trainer")
   @ApiResponses({
       @ApiResponse(responseCode = "201", description = "Trainer registered successfully"),
+      @ApiResponse(responseCode = "403", description = "Access denied"),
       @ApiResponse(responseCode = "400", description = "Invalid request data")})
   public ResponseEntity<TrainerResponse> register(@Valid @RequestBody TrainerRequest request) {
     PersonalTrainer trainer = new PersonalTrainer(null, request.name(), request.email(),
@@ -130,6 +139,7 @@ public class PersonalTrainerController {
   }
 
   @GetMapping
+  @PreAuthorize("hasAnyRole('TRAINER', 'ADMIN')")
   @Operation(summary = "List all trainers")
   @ApiResponse(responseCode = "200", description = "Trainers listed successfully")
   public ResponseEntity<List<TrainerResponse>> findAll() {
@@ -139,8 +149,10 @@ public class PersonalTrainerController {
   }
 
   @GetMapping("/{id}")
+  @PreAuthorize("hasAnyRole('TRAINER', 'ADMIN')")
   @Operation(summary = "Find trainer by ID")
   @ApiResponses({@ApiResponse(responseCode = "200", description = "Trainer found"),
+      @ApiResponse(responseCode = "403", description = "Access denied"),
       @ApiResponse(responseCode = "404", description = "Trainer not found")})
   public ResponseEntity<TrainerResponse> findById(@PathVariable Long id) {
     return ResponseEntity.ok(TrainerMapper.toResponse(personalTrainerService.findById(id)));
