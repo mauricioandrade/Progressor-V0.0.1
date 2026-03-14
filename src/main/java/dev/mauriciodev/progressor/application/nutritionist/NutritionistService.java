@@ -6,7 +6,7 @@ import dev.mauriciodev.progressor.domain.student.Student;
 import dev.mauriciodev.progressor.domain.student.StudentNotFoundException;
 import dev.mauriciodev.progressor.infrastructure.persistence.NutritionistRepository;
 import dev.mauriciodev.progressor.infrastructure.persistence.StudentRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
@@ -28,11 +28,6 @@ public class NutritionistService {
       StudentRepository studentRepository) {
     this.nutritionistRepository = nutritionistRepository;
     this.studentRepository = studentRepository;
-  }
-
-  @Transactional
-  public Nutritionist register(Nutritionist nutritionist) {
-    return nutritionistRepository.save(nutritionist);
   }
 
   public Nutritionist findById(Long id) {

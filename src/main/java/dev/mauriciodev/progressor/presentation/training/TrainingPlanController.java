@@ -91,6 +91,7 @@ public class TrainingPlanController {
   }
 
   @GetMapping("/me/current")
+  @PreAuthorize("hasRole('STUDENT')")
   @Operation(summary = "Get current training plan for the authenticated student")
   @ApiResponses({@ApiResponse(responseCode = "200", description = "Training plan found"),
       @ApiResponse(responseCode = "404", description = "No active training plan found")})
@@ -101,6 +102,7 @@ public class TrainingPlanController {
   }
 
   @GetMapping("/me/history")
+  @PreAuthorize("hasRole('STUDENT')")
   @Operation(summary = "Get training plan history for the authenticated student")
   @ApiResponse(responseCode = "200", description = "History retrieved successfully")
   public ResponseEntity<List<TrainingPlanResponse>> getPlanHistory(Authentication authentication) {

@@ -36,6 +36,7 @@ public class MeasurementController {
   }
 
   @PostMapping
+  @PreAuthorize("hasRole('STUDENT')")
   @Operation(summary = "Record a measurement")
   @ApiResponses({
       @ApiResponse(responseCode = "201", description = "Measurement recorded successfully"),
@@ -49,6 +50,7 @@ public class MeasurementController {
   }
 
   @GetMapping
+  @PreAuthorize("hasRole('STUDENT')")
   @Operation(summary = "List measurements for the authenticated student")
   @ApiResponse(responseCode = "200", description = "Measurements listed successfully")
   public ResponseEntity<List<MeasurementResponse>> findAll(Authentication authentication) {
@@ -59,6 +61,7 @@ public class MeasurementController {
   }
 
   @GetMapping("/evolution")
+  @PreAuthorize("hasRole('STUDENT')")
   @Operation(summary = "Get evolution for the authenticated student")
   @ApiResponses({
       @ApiResponse(responseCode = "200", description = "Evolution calculated successfully"),

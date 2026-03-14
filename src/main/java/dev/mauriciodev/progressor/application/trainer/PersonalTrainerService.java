@@ -6,7 +6,7 @@ import dev.mauriciodev.progressor.domain.trainer.PersonalTrainer;
 import dev.mauriciodev.progressor.domain.trainer.TrainerNotFoundException;
 import dev.mauriciodev.progressor.infrastructure.persistence.PersonalTrainerRepository;
 import dev.mauriciodev.progressor.infrastructure.persistence.StudentRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
@@ -28,11 +28,6 @@ public class PersonalTrainerService {
       StudentRepository studentRepository) {
     this.personalTrainerRepository = personalTrainerRepository;
     this.studentRepository = studentRepository;
-  }
-
-  @Transactional
-  public PersonalTrainer register(PersonalTrainer personalTrainer) {
-    return personalTrainerRepository.save(personalTrainer);
   }
 
   public PersonalTrainer findById(Long id) {

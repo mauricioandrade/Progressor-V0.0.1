@@ -74,6 +74,7 @@ public class StudentController {
   }
 
   @GetMapping("/me")
+  @PreAuthorize("hasRole('STUDENT')")
   @Operation(summary = "Get own profile")
   @ApiResponse(responseCode = "200", description = "Profile retrieved successfully")
   public ResponseEntity<StudentResponse> getMe(Authentication authentication) {
@@ -83,6 +84,7 @@ public class StudentController {
   }
 
   @PutMapping("/me")
+  @PreAuthorize("hasRole('STUDENT')")
   @Operation(summary = "Update own profile")
   @ApiResponses({@ApiResponse(responseCode = "200", description = "Profile updated"),
       @ApiResponse(responseCode = "404", description = "Student not found")})
@@ -94,6 +96,7 @@ public class StudentController {
   }
 
   @PatchMapping("/me/progress")
+  @PreAuthorize("hasRole('STUDENT')")
   @Operation(summary = "Evolve own student level")
   @ApiResponse(responseCode = "200", description = "Level evolved")
   public ResponseEntity<StudentResponse> evolveProgress(Authentication authentication) {
@@ -103,6 +106,7 @@ public class StudentController {
   }
 
   @PostMapping(value = "/me/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @PreAuthorize("hasRole('STUDENT')")
   @Operation(summary = "Upload profile avatar")
   @ApiResponses({@ApiResponse(responseCode = "204", description = "Avatar uploaded"),
       @ApiResponse(responseCode = "400", description = "Invalid file")})
@@ -114,12 +118,13 @@ public class StudentController {
   }
 
   @GetMapping("/me/avatar")
+  @PreAuthorize("hasRole('STUDENT')")
   @Operation(summary = "Get profile avatar")
   @ApiResponses({@ApiResponse(responseCode = "200", description = "Avatar returned"),
       @ApiResponse(responseCode = "404", description = "No avatar found")})
   public ResponseEntity<byte[]> getAvatar(Authentication authentication) {
     User user = (User) authentication.getPrincipal();
-    Student student = studentService.findAvatarByUserId(user.getId());
+    Student student = studentService.findByUserId(user.getId());
 
     if (student.getAvatarData() == null) {
       return ResponseEntity.notFound().build();

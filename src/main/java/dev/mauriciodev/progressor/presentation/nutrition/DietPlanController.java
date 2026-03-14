@@ -88,6 +88,7 @@ public class DietPlanController {
   }
 
   @GetMapping("/me/current")
+  @PreAuthorize("hasRole('STUDENT')")
   @Operation(summary = "Get current diet plan for the authenticated student")
   @ApiResponses({@ApiResponse(responseCode = "200", description = "Diet plan found"),
       @ApiResponse(responseCode = "404", description = "No active diet plan found")})

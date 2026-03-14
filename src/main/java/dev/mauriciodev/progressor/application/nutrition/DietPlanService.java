@@ -7,7 +7,7 @@ import dev.mauriciodev.progressor.domain.student.Student;
 import dev.mauriciodev.progressor.domain.student.StudentNotFoundException;
 import dev.mauriciodev.progressor.infrastructure.persistence.DietPlanRepository;
 import dev.mauriciodev.progressor.infrastructure.persistence.StudentRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
@@ -85,7 +85,7 @@ public class DietPlanService {
     Student student = studentRepository.findById(studentId)
         .orElseThrow(() -> new StudentNotFoundException(studentId));
     if (student.getCurrentDietPlan() == null) {
-      throw new DietPlanNotFoundException(0L);
+      throw new DietPlanNotFoundException("Student has no active diet plan");
     }
     return student.getCurrentDietPlan();
   }
@@ -94,7 +94,7 @@ public class DietPlanService {
     Student student = studentRepository.findByUserId(userId)
         .orElseThrow(() -> new StudentNotFoundException(userId));
     if (student.getCurrentDietPlan() == null) {
-      throw new DietPlanNotFoundException(0L);
+      throw new DietPlanNotFoundException("Student has no active diet plan");
     }
     return student.getCurrentDietPlan();
   }

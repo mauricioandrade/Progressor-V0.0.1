@@ -51,6 +51,10 @@ public class AuthService {
 
     Role role = request.role();
 
+    if (role == Role.ADMIN) {
+      throw new IllegalArgumentException("ADMIN accounts cannot be created via this endpoint.");
+    }
+
     if (role == Role.TRAINER) {
       if (request.cref() == null || request.cref().isBlank()) {
         throw new IllegalArgumentException("CREF is required for Personal Trainers.");
@@ -67,6 +71,10 @@ public class AuthService {
       if (nutritionistRepository.findByCrn(request.crn()).isPresent()) {
         throw new IllegalArgumentException("CRN is already registered.");
       }
+    }
+
+    if (role == Role.STUDENT && request.birthDate() == null) {
+      throw new IllegalArgumentException("Birth date is required for students.");
     }
 
     User user = User.create(request.email(), passwordEncoder.encode(request.password()), role);

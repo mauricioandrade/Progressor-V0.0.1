@@ -5,7 +5,7 @@ import dev.mauriciodev.progressor.domain.student.StudentNotFoundException;
 import dev.mauriciodev.progressor.domain.training.TrainingPlan;
 import dev.mauriciodev.progressor.infrastructure.persistence.StudentRepository;
 import dev.mauriciodev.progressor.infrastructure.persistence.TrainingPlanRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
@@ -27,11 +27,6 @@ public class StudentService {
       TrainingPlanRepository trainingPlanRepository) {
     this.studentRepository = studentRepository;
     this.trainingPlanRepository = trainingPlanRepository;
-  }
-
-  @Transactional
-  public Student register(Student student) {
-    return studentRepository.save(student);
   }
 
   @Transactional
@@ -119,8 +114,4 @@ public class StudentService {
     }
   }
 
-  @Transactional
-  public Student findAvatarByUserId(UUID userId) {
-    return findByUserId(userId);
-  }
 }

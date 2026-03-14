@@ -8,7 +8,7 @@ import dev.mauriciodev.progressor.domain.training.TrainingPlan;
 import dev.mauriciodev.progressor.domain.training.TrainingPlanNotFoundException;
 import dev.mauriciodev.progressor.infrastructure.persistence.StudentRepository;
 import dev.mauriciodev.progressor.infrastructure.persistence.TrainingPlanRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
@@ -90,7 +90,7 @@ public class TrainingPlanService {
     Student student = studentRepository.findByUserId(userId)
         .orElseThrow(() -> new StudentNotFoundException(userId));
     if (student.getCurrentTrainingPlan() == null) {
-      throw new TrainingPlanNotFoundException(0L);
+      throw new TrainingPlanNotFoundException("Student has no active training plan");
     }
     return student.getCurrentTrainingPlan();
   }
@@ -99,7 +99,7 @@ public class TrainingPlanService {
     Student student = studentRepository.findById(studentId)
         .orElseThrow(() -> new StudentNotFoundException(studentId));
     if (student.getCurrentTrainingPlan() == null) {
-      throw new TrainingPlanNotFoundException(0L);
+      throw new TrainingPlanNotFoundException("Student has no active training plan");
     }
     return student.getCurrentTrainingPlan();
   }

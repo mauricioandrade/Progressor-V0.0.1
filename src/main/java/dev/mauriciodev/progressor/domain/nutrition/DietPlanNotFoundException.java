@@ -5,4 +5,8 @@ public class DietPlanNotFoundException extends RuntimeException {
   public DietPlanNotFoundException(Long id) {
     super("Diet plan not found with id: " + id);
   }
+
+  public DietPlanNotFoundException(String message) {
+    super(message);
+  }
 }
