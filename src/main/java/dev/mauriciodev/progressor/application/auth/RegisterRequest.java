@@ -11,28 +11,20 @@ import java.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
 
 public record RegisterRequest(
-    @NotBlank(message = "Email is required")
-    @Email(message = "Invalid email format")
-    String email,
+    @NotBlank(message = "Email is required") @Email(message = "Invalid email format") String email,
 
-    @NotBlank(message = "Password is required")
-    @Size(min = 8, message = "Password must be at least 8 characters long")
-    @Pattern(regexp = "^(?=.*[A-Z])(?=.*\\d).*$", message = "Password must contain at least one uppercase letter and one number")
-    String password,
+    @NotBlank(message = "Password is required") @Size(min = 8, message = "Password must be at least 8 characters long") @Pattern(regexp = "^(?=.*[A-Z])(?=.*\\d).*$", message = "Password must contain at least one uppercase letter and one number") String password,
 
-    @NotBlank(message = "Name is required")
-    String name,
+    @NotBlank(message = "Name is required") String name,
 
     String phone,
 
     String cref,
 
-    @NotNull(message = "Role is required")
-    Role role,
+    String crn,
 
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    LocalDate birthDate
-) {
+    @NotNull(message = "Role is required") Role role,
+
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd") LocalDate birthDate) {
 
 }

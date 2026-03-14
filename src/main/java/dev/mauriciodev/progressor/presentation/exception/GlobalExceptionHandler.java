@@ -1,6 +1,8 @@
 package dev.mauriciodev.progressor.presentation.exception;
 
 import dev.mauriciodev.progressor.domain.measurement.MeasurementNotFoundException;
+import dev.mauriciodev.progressor.domain.nutrition.DietPlanNotFoundException;
+import dev.mauriciodev.progressor.domain.nutritionist.NutritionistNotFoundException;
 import dev.mauriciodev.progressor.domain.student.StudentNotFoundException;
 import dev.mauriciodev.progressor.domain.trainer.TrainerNotFoundException;
 import dev.mauriciodev.progressor.domain.training.ExerciseNotFoundException;
@@ -42,7 +44,8 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler({StudentNotFoundException.class, TrainerNotFoundException.class,
       TrainingPlanNotFoundException.class, MeasurementNotFoundException.class,
-      ExerciseNotFoundException.class})
+      ExerciseNotFoundException.class, DietPlanNotFoundException.class,
+      NutritionistNotFoundException.class})
   public ResponseEntity<ErrorResponse> handleNotFound(RuntimeException ex,
       HttpServletRequest request) {
     return buildResponse(HttpStatus.NOT_FOUND, ex.getMessage(), request);

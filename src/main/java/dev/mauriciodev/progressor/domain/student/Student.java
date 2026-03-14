@@ -1,6 +1,8 @@
 package dev.mauriciodev.progressor.domain.student;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import dev.mauriciodev.progressor.domain.nutrition.DietPlan;
+import dev.mauriciodev.progressor.domain.nutritionist.Nutritionist;
 import dev.mauriciodev.progressor.domain.person.Person;
 import dev.mauriciodev.progressor.domain.trainer.PersonalTrainer;
 import dev.mauriciodev.progressor.domain.training.TrainingPlan;
@@ -61,6 +63,15 @@ public class Student extends Person implements Progressable {
   @JoinColumn(name = "trainer_id")
   private PersonalTrainer trainer;
 
+  @JsonIgnore
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "nutritionist_id")
+  private Nutritionist nutritionist;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "current_diet_plan_id")
+  private DietPlan currentDietPlan;
+
   @Column(name = "avatar_data", columnDefinition = "BYTEA")
   private byte[] avatarData;
 
@@ -81,12 +92,6 @@ public class Student extends Person implements Progressable {
     this.trainingLevel = trainingLevel;
   }
 
-  // --- GETTERS QUE ESTAVAM FALTANDO ---
-  public PersonalTrainer getTrainer() {
-    return trainer;
-  }
-
-  // --- MÉTODOS DE DOMÍNIO ---
   @Override
   public void evolve() {
     this.trainingLevel = switch (this.trainingLevel) {
@@ -135,7 +140,26 @@ public class Student extends Person implements Progressable {
     }
   }
 
-  // --- OUTROS GETTERS E SETTERS ---
+  public void assignDietPlan(DietPlan plan) {
+    this.currentDietPlan = plan;
+  }
+
+  public PersonalTrainer getTrainer() {
+    return trainer;
+  }
+
+  public void setTrainer(PersonalTrainer trainer) {
+    this.trainer = trainer;
+  }
+
+  public Nutritionist getNutritionist() {
+    return nutritionist;
+  }
+
+  public void setNutritionist(Nutritionist nutritionist) {
+    this.nutritionist = nutritionist;
+  }
+
   public LocalDate getBirthDate() {
     return birthDate;
   }
@@ -164,6 +188,10 @@ public class Student extends Person implements Progressable {
     return currentTrainingPlan;
   }
 
+  public DietPlan getCurrentDietPlan() {
+    return currentDietPlan;
+  }
+
   public List<TrainingPlan> getTrainingHistory() {
     return List.copyOf(trainingHistory);
   }
@@ -182,10 +210,6 @@ public class Student extends Person implements Progressable {
 
   public void setUser(User user) {
     this.user = user;
-  }
-
-  public void setTrainer(PersonalTrainer t) {
-    this.trainer = t;
   }
 
   public void setAvatar(byte[] data, String contentType) {

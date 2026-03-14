@@ -1,11 +1,13 @@
 package dev.mauriciodev.progressor.application.auth;
 
+import dev.mauriciodev.progressor.domain.nutritionist.Nutritionist;
 import dev.mauriciodev.progressor.domain.shared.Goal;
 import dev.mauriciodev.progressor.domain.shared.TrainingLevel;
 import dev.mauriciodev.progressor.domain.student.Student;
 import dev.mauriciodev.progressor.domain.trainer.PersonalTrainer;
 import dev.mauriciodev.progressor.domain.user.Role;
 import dev.mauriciodev.progressor.domain.user.User;
+import dev.mauriciodev.progressor.infrastructure.persistence.NutritionistRepository;
 import dev.mauriciodev.progressor.infrastructure.persistence.PersonalTrainerRepository;
 import dev.mauriciodev.progressor.infrastructure.persistence.StudentRepository;
 import dev.mauriciodev.progressor.infrastructure.persistence.UserRepository;
@@ -23,16 +25,19 @@ public class AuthService {
   private final UserRepository userRepository;
   private final StudentRepository studentRepository;
   private final PersonalTrainerRepository trainerRepository;
+  private final NutritionistRepository nutritionistRepository;
   private final PasswordEncoder passwordEncoder;
   private final JwtService jwtService;
   private final AuthenticationManager authenticationManager;
 
   public AuthService(UserRepository userRepository, StudentRepository studentRepository,
-      PersonalTrainerRepository trainerRepository, PasswordEncoder passwordEncoder,
-      JwtService jwtService, AuthenticationManager authenticationManager) {
+      PersonalTrainerRepository trainerRepository, NutritionistRepository nutritionistRepository,
+      PasswordEncoder passwordEncoder, JwtService jwtService,
+      AuthenticationManager authenticationManager) {
     this.userRepository = userRepository;
     this.studentRepository = studentRepository;
     this.trainerRepository = trainerRepository;
+    this.nutritionistRepository = nutritionistRepository;
     this.passwordEncoder = passwordEncoder;
     this.jwtService = jwtService;
     this.authenticationManager = authenticationManager;
@@ -55,6 +60,15 @@ public class AuthService {
       }
     }
 
+    if (role == Role.NUTRITIONIST) {
+      if (request.crn() == null || request.crn().isBlank()) {
+        throw new IllegalArgumentException("CRN is required for Nutritionists.");
+      }
+      if (nutritionistRepository.findByCrn(request.crn()).isPresent()) {
+        throw new IllegalArgumentException("CRN is already registered.");
+      }
+    }
+
     User user = User.create(request.email(), passwordEncoder.encode(request.password()), role);
     userRepository.save(user);
 
@@ -68,6 +82,11 @@ public class AuthService {
           request.phone(), request.cref(), null);
       trainer.setUser(user);
       trainerRepository.save(trainer);
+    } else if (role == Role.NUTRITIONIST) {
+      Nutritionist nutritionist = new Nutritionist(null, request.name(), request.email(),
+          request.phone(), request.crn(), null);
+      nutritionist.setUser(user);
+      nutritionistRepository.save(nutritionist);
     }
 
     String token = jwtService.generateToken(user);
