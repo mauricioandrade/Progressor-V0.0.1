@@ -73,8 +73,8 @@ public class MeasurementController {
   }
 
   @GetMapping("/students/{studentId}")
-  @PreAuthorize("hasAnyRole('TRAINER', 'NUTRITIONIST', 'ADMIN')")
-  @Operation(summary = "List measurements for a student")
+  @PreAuthorize("hasAnyRole('TRAINER', 'ADMIN')")
+  @Operation(summary = "List measurements for a student (trainer access)")
   @ApiResponses({
       @ApiResponse(responseCode = "200", description = "Measurements listed successfully"),
       @ApiResponse(responseCode = "403", description = "Access denied"),
@@ -86,8 +86,8 @@ public class MeasurementController {
   }
 
   @GetMapping("/students/{studentId}/evolution")
-  @PreAuthorize("hasAnyRole('TRAINER', 'NUTRITIONIST', 'ADMIN')")
-  @Operation(summary = "Get evolution for a student")
+  @PreAuthorize("hasAnyRole('TRAINER', 'ADMIN')")
+  @Operation(summary = "Get evolution for a student (trainer access)")
   @ApiResponses({
       @ApiResponse(responseCode = "200", description = "Evolution calculated successfully"),
       @ApiResponse(responseCode = "403", description = "Access denied"),

@@ -30,6 +30,11 @@ public class PersonalTrainerService {
     this.studentRepository = studentRepository;
   }
 
+  @Transactional
+  public PersonalTrainer register(PersonalTrainer trainer) {
+    return personalTrainerRepository.save(trainer);
+  }
+
   public PersonalTrainer findById(Long id) {
     return personalTrainerRepository.findById(id)
         .orElseThrow(() -> new TrainerNotFoundException(id));
