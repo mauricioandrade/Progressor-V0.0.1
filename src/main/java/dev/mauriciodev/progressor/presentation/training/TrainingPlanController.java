@@ -6,6 +6,7 @@ import dev.mauriciodev.progressor.application.training.TrainingPlanMapper;
 import dev.mauriciodev.progressor.application.training.TrainingPlanRequest;
 import dev.mauriciodev.progressor.application.training.TrainingPlanResponse;
 import dev.mauriciodev.progressor.application.training.TrainingPlanService;
+import dev.mauriciodev.progressor.application.training.TrainingPlanUpdateRequest;
 import dev.mauriciodev.progressor.domain.student.Student;
 import dev.mauriciodev.progressor.domain.training.TrainingPlan;
 import dev.mauriciodev.progressor.domain.user.User;
@@ -60,7 +61,7 @@ public class TrainingPlanController {
       @ApiResponse(responseCode = "403", description = "Access denied"),
       @ApiResponse(responseCode = "404", description = "Training plan not found")})
   public ResponseEntity<TrainingPlanResponse> update(@PathVariable Long id,
-      @Valid @RequestBody TrainingPlanRequest request) {
+      @Valid @RequestBody TrainingPlanUpdateRequest request) {
     TrainingPlan updated = trainingPlanService.update(id, request);
     return ResponseEntity.ok(TrainingPlanMapper.toResponse(updated));
   }

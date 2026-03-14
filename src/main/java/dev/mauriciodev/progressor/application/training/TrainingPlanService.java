@@ -44,9 +44,7 @@ public class TrainingPlanService {
   public Student assignToStudent(Long planId, Long studentId) {
     TrainingPlan plan = findById(planId);
     Student student = studentService.findById(studentId);
-
     student.assignTrainingPlan(plan);
-
     return studentRepository.save(student);
   }
 
@@ -68,7 +66,7 @@ public class TrainingPlanService {
   }
 
   @Transactional
-  public TrainingPlan update(Long id, TrainingPlanRequest request) {
+  public TrainingPlan update(Long id, TrainingPlanUpdateRequest request) {
     TrainingPlan plan = findById(id);
     List<Exercise> newExercises = toExercises(request.exercises());
     plan.update(request.name(), request.durationWeeks(), request.level(), newExercises);

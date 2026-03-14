@@ -22,17 +22,4 @@ public final class StudentMapper {
             student.getCurrentTrainingPlan()) : null, student.getAvatarData(),
         student.getAvatarContentType());
   }
-
-  public static Student toEntity(StudentRequest request) {
-    if (request == null) {
-      return null;
-    }
-
-    Goal goal = request.goal() != null ? request.goal() : Goal.CONDITIONING;
-    TrainingLevel level =
-        request.trainingLevel() != null ? request.trainingLevel() : TrainingLevel.BEGINNER;
-
-    return new Student(null, request.name(), request.email(), request.phone(), request.birthDate(),
-        request.weight(), request.height(), goal, level);
-  }
 }
