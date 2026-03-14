@@ -11,10 +11,5 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
   Optional<Student> findByUserId(UUID userId);
 
   List<Student> findByTrainerId(Long trainerId);
-
-  List<Student> findByNutritionistId(Long nutritionistId);
-
-  List<Student> findByCurrentTrainingPlanId(Long trainingPlanId);
-
-  List<Student> findByCurrentDietPlanId(Long dietPlanId);
 }
+

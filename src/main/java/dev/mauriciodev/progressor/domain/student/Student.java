@@ -79,7 +79,7 @@ public class Student extends Person implements Progressable {
   private String avatarContentType;
 
   protected Student() {
-    super();
+    super(null, null, null, null);
   }
 
   public Student(Long id, String name, String email, String phone, LocalDate birthDate,

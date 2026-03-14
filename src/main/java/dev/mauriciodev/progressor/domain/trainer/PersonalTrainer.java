@@ -29,35 +29,13 @@ public class PersonalTrainer extends Person {
   private String avatarContentType;
 
   protected PersonalTrainer() {
-    super();
+    super(null, null, null, null);
   }
 
   public PersonalTrainer(Long id, String name, String email, String phone, String cref,
       String specialty) {
     super(id, name, email, phone);
-    if (cref == null || cref.isBlank()) {
-      throw new IllegalArgumentException("CREF must not be blank");
-    }
     this.cref = cref;
-    this.specialty = specialty;
-  }
-
-  public void setUser(User user) {
-    this.user = user;
-  }
-
-  public void setAvatar(byte[] data, String contentType) {
-    this.avatarData = data;
-    this.avatarContentType = contentType;
-  }
-
-  public void updateProfile(String name, String phone, String specialty) {
-    if (name != null) {
-      setName(name);
-    }
-    if (phone != null) {
-      setPhone(phone);
-    }
     this.specialty = specialty;
   }
 
@@ -65,19 +43,39 @@ public class PersonalTrainer extends Person {
     return user;
   }
 
+  public void setUser(User user) {
+    this.user = user;
+  }
+
   public String getCref() {
     return cref;
+  }
+
+  public void setCref(String cref) {
+    this.cref = cref;
   }
 
   public String getSpecialty() {
     return specialty;
   }
 
+  public void setSpecialty(String specialty) {
+    this.specialty = specialty;
+  }
+
   public byte[] getAvatarData() {
     return avatarData;
   }
 
+  public void setAvatarData(byte[] avatarData) {
+    this.avatarData = avatarData;
+  }
+
   public String getAvatarContentType() {
     return avatarContentType;
+  }
+
+  public void setAvatarContentType(String avatarContentType) {
+    this.avatarContentType = avatarContentType;
   }
 }

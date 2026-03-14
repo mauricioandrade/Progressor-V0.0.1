@@ -49,18 +49,6 @@ public class Measurement {
       Double heightCm, Double bodyFatPercent, Double muscleMassPercent, Double rightBicepsCm,
       Double leftBicepsCm, Double chestCm, Double abdomenCm, Double hipCm, Double rightThighCm,
       Double leftThighCm, Double rightCalfCm, Double leftCalfCm) {
-    if (student == null) {
-      throw new IllegalArgumentException("Student must not be null");
-    }
-    if (recordedAt == null) {
-      throw new IllegalArgumentException("RecordedAt must not be null");
-    }
-    if (weightKg != null && weightKg <= 0) {
-      throw new IllegalArgumentException("Weight must be positive");
-    }
-    if (heightCm != null && heightCm <= 0) {
-      throw new IllegalArgumentException("Height must be positive");
-    }
     this.id = id;
     this.student = student;
     this.recordedAt = recordedAt;
@@ -77,28 +65,6 @@ public class Measurement {
     this.leftThighCm = leftThighCm;
     this.rightCalfCm = rightCalfCm;
     this.leftCalfCm = leftCalfCm;
-  }
-
-  public MeasurementDelta calculateEvolutionFrom(Measurement baseline) {
-    if (baseline == null) {
-      throw new IllegalArgumentException("Baseline measurement must not be null");
-    }
-    return new MeasurementDelta(round(this.weightKg, baseline.weightKg),
-        round(this.bodyFatPercent, baseline.bodyFatPercent),
-        round(this.muscleMassPercent, baseline.muscleMassPercent),
-        round(this.rightBicepsCm, baseline.rightBicepsCm),
-        round(this.leftBicepsCm, baseline.leftBicepsCm), round(this.chestCm, baseline.chestCm),
-        round(this.abdomenCm, baseline.abdomenCm), round(this.hipCm, baseline.hipCm),
-        round(this.rightThighCm, baseline.rightThighCm),
-        round(this.leftThighCm, baseline.leftThighCm),
-        round(this.rightCalfCm, baseline.rightCalfCm), round(this.leftCalfCm, baseline.leftCalfCm));
-  }
-
-  private double round(Double current, Double baseline) {
-    if (current == null || baseline == null) {
-      return 0.0;
-    }
-    return Math.round((current - baseline) * 10.0) / 10.0;
   }
 
   public UUID getId() {

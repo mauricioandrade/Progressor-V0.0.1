@@ -1,7 +1,6 @@
 package dev.mauriciodev.progressor.application.measurement;
 
 import dev.mauriciodev.progressor.domain.measurement.Measurement;
-import dev.mauriciodev.progressor.domain.measurement.MeasurementDelta;
 import dev.mauriciodev.progressor.domain.student.Student;
 import dev.mauriciodev.progressor.domain.student.StudentNotFoundException;
 import dev.mauriciodev.progressor.infrastructure.persistence.MeasurementRepository;
@@ -70,12 +69,25 @@ public class MeasurementService {
 
     Measurement first = list.get(0);
     Measurement last = list.get(list.size() - 1);
-    MeasurementDelta delta = last.calculateEvolutionFrom(first);
 
     return new MeasurementEvolutionResponse(MeasurementMapper.toResponse(first),
-        MeasurementMapper.toResponse(last), delta.weightKg(), delta.bodyFatPercent(),
-        delta.muscleMassPercent(), delta.rightBicepsCm(), delta.leftBicepsCm(), delta.chestCm(),
-        delta.abdomenCm(), delta.hipCm(), delta.rightThighCm(), delta.leftThighCm(),
-        delta.rightCalfCm(), delta.leftCalfCm());
+        MeasurementMapper.toResponse(last), delta(last.getWeightKg(), first.getWeightKg()),
+        delta(last.getBodyFatPercent(), first.getBodyFatPercent()),
+        delta(last.getMuscleMassPercent(), first.getMuscleMassPercent()),
+        delta(last.getRightBicepsCm(), first.getRightBicepsCm()),
+        delta(last.getLeftBicepsCm(), first.getLeftBicepsCm()),
+        delta(last.getChestCm(), first.getChestCm()),
+        delta(last.getAbdomenCm(), first.getAbdomenCm()), delta(last.getHipCm(), first.getHipCm()),
+        delta(last.getRightThighCm(), first.getRightThighCm()),
+        delta(last.getLeftThighCm(), first.getLeftThighCm()),
+        delta(last.getRightCalfCm(), first.getRightCalfCm()),
+        delta(last.getLeftCalfCm(), first.getLeftCalfCm()));
+  }
+
+  private double delta(Double current, Double previous) {
+    if (current == null || previous == null) {
+      return 0.0;
+    }
+    return Math.round((current - previous) * 10.0) / 10.0;
   }
 }

@@ -82,7 +82,9 @@ public class PersonalTrainerService {
   public void uploadAvatar(UUID userId, MultipartFile file) throws IOException {
     validateAvatar(file);
     PersonalTrainer trainer = findByUserId(userId);
-    trainer.setAvatar(file.getBytes(), file.getContentType());
+
+    trainer.setAvatarData(file.getBytes());
+    trainer.setAvatarContentType(file.getContentType());
     personalTrainerRepository.save(trainer);
   }
 
