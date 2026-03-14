@@ -111,8 +111,8 @@ public class TrainingPlanController {
   }
 
   @GetMapping("/student/{studentId}/current")
-  @PreAuthorize("hasAnyRole('TRAINER', 'ADMIN')")
-  @Operation(summary = "Get current training plan for a student (trainer access)")
+  @PreAuthorize("hasAnyRole('TRAINER', 'NUTRITIONIST', 'ADMIN')")
+  @Operation(summary = "Get current training plan for a student")
   @ApiResponses({@ApiResponse(responseCode = "200", description = "Training plan found"),
       @ApiResponse(responseCode = "403", description = "Access denied"),
       @ApiResponse(responseCode = "404", description = "No active training plan or student not found")})

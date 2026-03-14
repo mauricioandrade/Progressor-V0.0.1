@@ -42,7 +42,7 @@ public class StudentController {
   }
 
   @GetMapping
-  @PreAuthorize("hasAnyRole('TRAINER', 'ADMIN')")
+  @PreAuthorize("hasAnyRole('TRAINER', 'NUTRITIONIST', 'ADMIN')")
   @Operation(summary = "List all students")
   @ApiResponse(responseCode = "200", description = "Students listed successfully")
   public ResponseEntity<List<StudentResponse>> findAll() {
@@ -52,7 +52,7 @@ public class StudentController {
   }
 
   @GetMapping("/{id}")
-  @PreAuthorize("hasAnyRole('TRAINER', 'ADMIN')")
+  @PreAuthorize("hasAnyRole('TRAINER', 'NUTRITIONIST', 'ADMIN')")
   @Operation(summary = "Find student by ID")
   @ApiResponses({@ApiResponse(responseCode = "200", description = "Student found"),
       @ApiResponse(responseCode = "403", description = "Access denied"),
