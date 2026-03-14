@@ -1,554 +1,768 @@
 <div align="center">
 
-<img src="https://img.shields.io/badge/Java-25-orange?style=for-the-badge&logo=openjdk&logoColor=white"/>
-<img src="https://img.shields.io/badge/Spring%20Boot-4.0.3-brightgreen?style=for-the-badge&logo=springboot&logoColor=white"/>
-<img src="https://img.shields.io/badge/PostgreSQL-Docker-blue?style=for-the-badge&logo=postgresql&logoColor=white"/>
-<img src="https://img.shields.io/badge/Spring%20Security-JWT-yellow?style=for-the-badge&logo=springsecurity&logoColor=white"/>
-<img src="https://img.shields.io/badge/Maven-C71A36?style=for-the-badge&logo=apachemaven&logoColor=white"/>
+<img src="https://img.shields.io/badge/status-em%20desenvolvimento-brightgreen?style=for-the-badge" alt="Status"/>
+<img src="https://img.shields.io/badge/java-25-orange?style=for-the-badge&logo=openjdk&logoColor=white" alt="Java"/>
+<img src="https://img.shields.io/badge/spring%20boot-4.0-6DB33F?style=for-the-badge&logo=springboot&logoColor=white" alt="Spring Boot"/>
+<img src="https://img.shields.io/badge/react-19-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React"/>
+<img src="https://img.shields.io/badge/postgresql-18-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL"/>
 
-<br/><br/>
+# 🏋️ Progressor
 
-# 📈 Progressor V0.0.1
+**EN** · [PT](#português)
 
-**Backend API · [Frontend →](https://github.com/mauricioandrade/progressor-frontend)**
+> A management platform for personal trainers and nutritionists to track students, prescribe training plans and diets, and monitor physical evolution over time.
 
-### 🇺🇸 English &nbsp;|&nbsp; 🇧🇷 [Português](#-progressor-v001-1)
+**Backend** → `https://github.com/mauricioandrade/Progressor-V0.0.1`
+**Frontend** → `https://github.com/mauricioandrade/progressor-frontend`
 
 </div>
 
 ---
 
-## 📌 About the Project
+## 📋 Table of Contents
 
-**Progressor** is a gym management system focused on **evolution**. Students and personal trainers can register, track measurements, manage training plans, and monitor physical progress over time.
-
-> Optional trainer. Maximum autonomy. Every step tracked.
-
-**V0.0.1 is complete** — all 16 milestones implemented, from project setup to a fully functional React frontend.
-
-🎨 **Frontend:** [github.com/mauricioandrade/progressor-frontend](https://github.com/mauricioandrade/progressor-frontend)
+- [Overview](#overview)
+- [Tech Stack](#tech-stack)
+- [Getting Started](#getting-started)
+- [Authentication](#authentication)
+- [Roles & Permissions](#roles--permissions)
+- [API Reference](#api-reference)
+- [Project Structure](#project-structure)
+- [Architecture Decisions](#architecture-decisions)
+- [Commit Convention](#commit-convention)
+- [Português](#português)
 
 ---
 
-## 🛠️ Tech Stack
+## Overview
+
+Progressor connects three types of users in a single platform:
+
+| Role | What they do |
+|---|---|
+| 🎓 **Student** | Tracks own training plan, diet and body measurements |
+| 💪 **Trainer** | Links students, creates and assigns training plans |
+| 🥗 **Nutritionist** | Links students, creates and assigns diet plans |
+
+A student can have **one trainer** and **one nutritionist** simultaneously. Both professionals can view the student's measurements and current plans to deliver a holistic approach.
+
+---
+
+## Tech Stack
 
 ### Backend
+
 | Technology | Version | Purpose |
 |---|---|---|
-| Java | 25 | Main language |
-| Spring Boot | 4.0.3 | Application framework |
-| Spring Web | — | REST API |
-| Spring Data JPA | — | Database persistence |
-| Spring Security | 7.x | Authentication and authorization |
-| JJWT | 0.12.6 | JWT token generation and validation |
-| Spring Actuator | — | Health check and monitoring |
-| SpringDoc OpenAPI | — | Swagger documentation |
-| PostgreSQL | 18 | Relational database |
-| Docker | — | Local database container |
-| Maven | — | Dependency management |
+| ☕ Java | 25 | Language |
+| 🍃 Spring Boot | 4.0.3 | Framework |
+| 🔒 Spring Security | 7.0 | Authentication & authorization |
+| 🪙 JWT (jjwt) | 0.12.6 | Stateless tokens |
+| 🗄️ Spring Data JPA | 4.0 | Persistence layer |
+| 🐘 PostgreSQL | 18 | Database |
+| ✅ Bean Validation | 3.1 | Input validation |
+| 📖 SpringDoc OpenAPI | 2.8 | Swagger UI |
+
+### Frontend
+
+| Technology | Version | Purpose |
+|---|---|---|
+| ⚛️ React | 19 | UI framework |
+| 📘 TypeScript | 5 | Type safety |
+| ⚡ Vite | 6 | Build tool |
+| 🛣️ React Router | 7 | Routing |
+| 🔗 Axios | — | HTTP client |
+| 📊 Recharts | — | Charts |
 
 ---
 
-## 🏗️ Architecture — Clean Architecture
-
-```
-dev.mauriciodev.Progressor_V001/
-│
-├── domain/                        → Business entities and rules
-│   ├── person/                    → Person (base class)
-│   ├── student/                   → Student entity + exceptions
-│   ├── trainer/                   → PersonalTrainer entity + exceptions
-│   ├── training/                  → TrainingPlan entity + exceptions
-│   ├── measurement/               → Measurement entity + exceptions
-│   ├── shared/                    → Goal, TrainingLevel, Progressable
-│   └── user/                      → User (auth entity), Role
-│
-├── application/                   → Use cases, services, DTOs, mappers
-│   ├── auth/                      → AuthService, RegisterRequest, LoginRequest, AuthResponse
-│   ├── student/                   → StudentService, StudentRequest/Response, StudentMapper
-│   ├── trainer/                   → PersonalTrainerService, TrainerRequest/Response, TrainerMapper
-│   ├── training/                  → TrainingPlanService, TrainingPlanRequest/Response, TrainingPlanMapper
-│   └── measurement/               → MeasurementService, MeasurementRequest/Response, MeasurementMapper
-│
-├── infrastructure/                → Frameworks and external integrations
-│   ├── persistence/               → JPA Repositories
-│   ├── security/                  → JWT filter, SecurityConfig, UserDetailsServiceImpl
-│   └── openapi/                   → Swagger/OpenAPI configuration
-│
-└── presentation/                  → REST controllers and exception handlers
-    ├── auth/                      → AuthController
-    ├── student/                   → StudentController
-    ├── trainer/                   → PersonalTrainerController
-    ├── training/                  → TrainingPlanController
-    ├── measurement/               → MeasurementController
-    ├── exception/                 → GlobalExceptionHandler
-    └── UserController             → /api/users/me
-```
-
----
-
-## 🚀 How to Run Locally
+## Getting Started
 
 ### Prerequisites
+
 - Java 25+
-- Maven
-- Docker Desktop
+- Node 20+
+- Docker
 
-### Steps
+### 1. Database
 
-**1. Clone the repository**
 ```bash
-git clone https://github.com/mauricioandrade/Progressor-V0.0.1.git
+docker run --name progressor-db \
+  -e POSTGRES_DB=progressor \
+  -e POSTGRES_USER=progressor \
+  -e POSTGRES_PASSWORD=progressor \
+  -p 5432:5432 \
+  -d postgres
+```
+
+### 2. Backend
+
+```bash
+git clone https://github.com/mauricioandrade/Progressor-V0.0.1
 cd Progressor-V0.0.1
+./mvnw spring-boot:run
 ```
 
-**2. Start the PostgreSQL container**
+> Runs on `http://localhost:8081`
+> Swagger UI → `http://localhost:8081/swagger-ui.html`
+
+### 3. Frontend
+
 ```bash
-docker compose up -d
+git clone https://github.com/mauricioandrade/progressor-frontend
+cd progressor-frontend
+npm install
+npm run dev
 ```
 
-**3. Run the application**
-```bash
-mvn spring-boot:run
-```
+> Runs on `http://localhost:5173`
 
-> The backend runs on **port 8081** (`server.port=8081` in `application.yml`).
+### Environment variables (backend)
 
----
+```yaml
+# src/main/resources/application.yml
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/progressor
+    username: progressor
+    password: progressor
+  jpa:
+    hibernate:
+      ddl-auto: update
 
-## 📖 Testing the API
-
-### Option 1 — Swagger UI (browser)
-
-Access the interactive API documentation:
-```
-http://localhost:8081/swagger-ui/index.html
-```
-
-**How to authenticate in Swagger:**
-1. Call `POST /auth/login` with your credentials
-2. Copy the `token` from the response
-3. Click the **Authorize 🔓** button at the top right
-4. Paste: `Bearer <your_token>`
-5. Click **Authorize** — all subsequent requests will include the token
-
-**Suggested test flow in Swagger:**
-```
-POST /auth/register    → create a STUDENT account
-POST /auth/register    → create a TRAINER account
-POST /auth/login       → login as STUDENT, copy token, authorize
-GET  /students/me      → view student profile
-PUT  /students/me      → update age, weight, height, goal
-POST /auth/login       → login as TRAINER, copy token, authorize
-POST /trainers/me/students/{id}  → link student to trainer
-POST /training-plans   → create a training plan for the student
-POST /auth/login       → login as STUDENT again
-GET  /training-plans/me/current  → view current plan
-POST /measurements     → record a measurement
-POST /measurements     → record a second measurement
-GET  /measurements/evolution     → view evolution deltas
+jwt:
+  secret: <at-least-32-character-secret-key>
+  expiration-ms: 86400000
 ```
 
 ---
 
-### Option 2 — Postman Collection
+## Authentication
 
-Import the collection file from `docs/Progressor-API.postman_collection.json`.
+All endpoints except `/auth/**`, `/swagger-ui/**` and `/actuator/health` require a JWT:
 
-**Features:**
-- Pre-configured base URL (`http://localhost:8081`)
-- Login requests automatically save `{{studentToken}}` and `{{trainerToken}}` as collection variables — no manual copy/paste needed
-- All endpoints organized by module: Auth, Students, Trainers, Training Plans, Measurements
-
-**Quick start:**
-1. Import the collection in Postman: **Import → Upload Files**
-2. Run **Login Student** → token saved automatically
-3. Run **Login Trainer** → token saved automatically
-4. All other requests use `{{studentToken}}` or `{{trainerToken}}` automatically
-
----
-
-## 🌐 API Endpoints
-
-### Authentication
-| Method | Endpoint | Auth | Description |
-|---|---|---|---|
-| `POST` | `/auth/register` | ❌ | Register a new user (STUDENT or TRAINER) |
-| `POST` | `/auth/login` | ❌ | Login and receive JWT token |
-| `GET` | `/api/users/me` | ✅ | Get authenticated user info |
-
-### Students
-| Method | Endpoint | Auth | Description |
-|---|---|---|---|
-| `GET` | `/students/me` | ✅ STUDENT | Get own profile |
-| `PUT` | `/students/me` | ✅ STUDENT | Update own profile |
-| `PATCH` | `/students/me/progress` | ✅ STUDENT | Trigger level progression |
-
-### Personal Trainers
-| Method | Endpoint | Auth | Description |
-|---|---|---|---|
-| `GET` | `/trainers/me` | ✅ TRAINER | Get own profile |
-| `POST` | `/trainers/me/students/{id}` | ✅ TRAINER | Link a student |
-| `DELETE` | `/trainers/me/students/{id}` | ✅ TRAINER | Unlink a student |
-| `GET` | `/trainers/me/students` | ✅ TRAINER | List supervised students |
-
-### Training Plans
-| Method | Endpoint | Auth | Description |
-|---|---|---|---|
-| `POST` | `/training-plans` | ✅ TRAINER | Create plan for a student |
-| `POST` | `/training-plans/me` | ✅ STUDENT | Create own training plan |
-| `GET` | `/training-plans/me/current` | ✅ STUDENT | Get current active plan |
-| `GET` | `/training-plans/me/history` | ✅ STUDENT | Get plan history |
-| `GET` | `/training-plans` | ✅ | List all training plans |
-
-### Measurements
-| Method | Endpoint | Auth | Description |
-|---|---|---|---|
-| `POST` | `/measurements` | ✅ STUDENT | Record a new measurement |
-| `GET` | `/measurements` | ✅ STUDENT | List all measurements |
-| `GET` | `/measurements/evolution` | ✅ STUDENT | Get evolution deltas |
-| `GET` | `/measurements/trainer/students/{id}` | ✅ TRAINER | View student measurements |
-
-**Measurement fields:**
-`weightKg`, `heightCm`, `bodyFatPercent`, `muscleMassPercent`, `waistCm`, `hipCm`, `chestCm`, `rightArmCm`, `leftArmCm`, `rightThighCm`, `leftThighCm`
-
-### Monitoring
-| Method | Endpoint | Auth | Description |
-|---|---|---|---|
-| `GET` | `/actuator/health` | ❌ | Application health check |
-
----
-
-## 🗺️ Roadmap
-
-- [x] 🏗️ **M1** — Project Foundation (setup, Docker, enums, package structure)
-- [x] 🧱 **M2** — Core Entities (Person, Student, PersonalTrainer, TrainingPlan)
-- [x] ⚙️ **M3** — Business Layer (repositories and services)
-- [x] 🌐 **M4** — REST API (controllers and DTOs)
-- [x] 📈 **M5** — Progression System (Progressable interface and evolution logic)
-- [x] 🩺 **M6** — Health Check (Spring Actuator)
-- [x] 📦 **M7** — Docker Complete (Dockerfile and full docker-compose)
-- [x] 📖 **M8** — API Documentation (Swagger / OpenAPI)
-- [x] 🔐 **M9** — Authentication (Spring Security + JWT)
-- [x] ♻️ **M10** — Refactor: Clean Architecture Migration
-- [x] 🔗 **M11** — Auth: User–Domain Binding (User ↔ Student / Trainer)
-- [x] 🎓 **M12** — Student Module (self-service endpoints)
-- [x] 🏋️ **M13** — Personal Trainer Module (profile + student supervision)
-- [x] 📋 **M14** — Training Plans Module (role-based access + self-service)
-- [x] 📏 **M15** — Measurements Module (body tracking: weight, body fat, arms D/E, thighs D/E...)
-- [x] 🎨 **M16** — Frontend (React + Vite + TypeScript + Tailwind)
-
----
-
-## 🤝 How to Contribute
-
-### 1. Fork the repository
-Click the **Fork** button at the top right of this page.
-
-### 2. Clone your fork
-```bash
-git clone https://github.com/YOUR_USERNAME/Progressor-V0.0.1.git
-cd Progressor-V0.0.1
+```
+Authorization: Bearer <token>
 ```
 
-### 3. Set up the upstream remote
-```bash
-git remote add upstream https://github.com/mauricioandrade/Progressor-V0.0.1.git
+### Register
+
+```http
+POST /auth/register
 ```
 
-### 4. Pick an issue
-- Go to the [Issues](https://github.com/mauricioandrade/Progressor-V0.0.1/issues) tab
-- Comment: **"I'd like to work on this"** and wait for assignment
-
-### 5. Create a branch, commit and open a Pull Request
-```bash
-git checkout -b feature/issue-XX-short-description
-git commit -m "feat(scope): short description"
-git push origin feature/issue-XX-short-description
+```json
+{
+  "email": "trainer@example.com",
+  "password": "Password1",
+  "name": "John Smith",
+  "phone": "11999999999",
+  "cref": "123456-G/SP",
+  "role": "TRAINER"
+}
 ```
 
----
-
-## 📋 Commit Convention
-
-| Type | When to use |
+| Role | Required extra fields |
 |---|---|
-| `feat` | New feature |
-| `fix` | Bug fix |
-| `chore` | Setup, config, dependencies |
-| `refactor` | Code improvement without behavior change |
-| `docs` | Documentation |
-| `test` | Tests |
+| `STUDENT` | `birthDate` (yyyy-MM-dd) |
+| `TRAINER` | `cref` |
+| `NUTRITIONIST` | `crn` |
+
+### Login
+
+```http
+POST /auth/login
+```
+
+```json
+{
+  "email": "trainer@example.com",
+  "password": "Password1"
+}
+```
 
 ---
 
-<br/><br/>
+## Roles & Permissions
+
+| Role | Description |
+|---|---|
+| `STUDENT` | Own profile, training plan, diet plan, measurements |
+| `TRAINER` | Manage linked students and training plans |
+| `NUTRITIONIST` | Manage linked students and diet plans |
+| `ADMIN` | Full access |
 
 ---
 
-<div align="center">
+## API Reference
 
-# 📈 Progressor V0.0.1
+### 🔐 Auth
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| POST | `/auth/register` | public | Register user |
+| POST | `/auth/login` | public | Login, returns JWT |
 
-**Backend API · [Frontend →](https://github.com/mauricioandrade/progressor-frontend)**
+### 🎓 Students
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| GET | `/students` | TRAINER, NUTRITIONIST, ADMIN | List all |
+| GET | `/students/{id}` | TRAINER, NUTRITIONIST, ADMIN | Find by ID |
+| PATCH | `/students/{id}/progress` | TRAINER, ADMIN | Level up student |
+| GET | `/students/me` | authenticated | Own profile |
+| PUT | `/students/me` | authenticated | Update own profile |
+| PATCH | `/students/me/progress` | authenticated | Level up self |
+| POST | `/students/me/avatar` | authenticated | Upload avatar |
+| GET | `/students/me/avatar` | authenticated | Get avatar |
 
-### 🇧🇷 Português &nbsp;|&nbsp; 🇺🇸 [English](#-progressor-v001)
+### 💪 Trainers
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| GET | `/trainers/me` | TRAINER | Own profile |
+| POST | `/trainers/me/avatar` | TRAINER | Upload avatar |
+| GET | `/trainers/me/avatar` | TRAINER | Get avatar |
+| GET | `/trainers/me/students` | TRAINER | Linked students |
+| POST | `/trainers/me/students/{id}` | TRAINER | Link student |
+| DELETE | `/trainers/me/students/{id}` | TRAINER | Unlink student |
+| GET | `/trainers` | TRAINER, ADMIN | List all |
+| GET | `/trainers/{id}` | TRAINER, ADMIN | Find by ID |
+| POST | `/trainers` | ADMIN | Register trainer |
+
+### 🥗 Nutritionists
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| GET | `/nutritionists/me` | NUTRITIONIST | Own profile |
+| POST | `/nutritionists/me/avatar` | NUTRITIONIST | Upload avatar |
+| GET | `/nutritionists/me/avatar` | NUTRITIONIST | Get avatar |
+| GET | `/nutritionists/me/students` | NUTRITIONIST | Linked students |
+| POST | `/nutritionists/me/students/{id}` | NUTRITIONIST | Link student |
+| DELETE | `/nutritionists/me/students/{id}` | NUTRITIONIST | Unlink student |
+| GET | `/nutritionists` | NUTRITIONIST, ADMIN | List all |
+| GET | `/nutritionists/{id}` | NUTRITIONIST, ADMIN | Find by ID |
+
+### 🏃 Training Plans
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| POST | `/training-plans` | TRAINER | Create plan for student |
+| PUT | `/training-plans/{id}` | TRAINER | Update plan |
+| DELETE | `/training-plans/{id}` | TRAINER | Delete plan |
+| POST | `/training-plans/{id}/assign/{studentId}` | TRAINER | Assign to student |
+| GET | `/training-plans` | TRAINER, ADMIN | List all |
+| GET | `/training-plans/{id}` | TRAINER, ADMIN | Find by ID |
+| GET | `/training-plans/me/current` | authenticated | Own current plan |
+| GET | `/training-plans/me/history` | authenticated | Own history |
+| GET | `/training-plans/student/{id}/current` | TRAINER, NUTRITIONIST, ADMIN | Student's current plan |
+
+### 🥦 Diet Plans
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| POST | `/diet-plans` | NUTRITIONIST | Create plan for student |
+| PUT | `/diet-plans/{id}` | NUTRITIONIST | Update plan |
+| DELETE | `/diet-plans/{id}` | NUTRITIONIST | Delete plan |
+| POST | `/diet-plans/{id}/assign/{studentId}` | NUTRITIONIST | Assign to student |
+| GET | `/diet-plans` | NUTRITIONIST, ADMIN | List all |
+| GET | `/diet-plans/{id}` | NUTRITIONIST, ADMIN | Find by ID |
+| GET | `/diet-plans/me/current` | authenticated | Own current diet |
+| GET | `/diet-plans/student/{id}/current` | TRAINER, NUTRITIONIST, ADMIN | Student's current diet |
+
+### 📏 Measurements
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| POST | `/measurements` | authenticated | Record measurement |
+| GET | `/measurements` | authenticated | Own measurements |
+| GET | `/measurements/evolution` | authenticated | Own evolution |
+| GET | `/measurements/students/{id}` | TRAINER, NUTRITIONIST, ADMIN | Student's measurements |
+| GET | `/measurements/students/{id}/evolution` | TRAINER, NUTRITIONIST, ADMIN | Student's evolution |
+
+---
+
+## Project Structure
+
+```
+src/main/java/dev/mauriciodev/progressor/
+│
+├── 📂 application/               # Use cases — orchestration only, no business rules
+│   ├── auth/                     # AuthService, RegisterRequest, LoginRequest, AuthResponse
+│   ├── measurement/              # MeasurementService, Mapper, Request, Response, EvolutionResponse
+│   ├── nutrition/                # DietPlanService, Mapper, Request, UpdateRequest, Response
+│   ├── nutritionist/             # NutritionistService, Mapper, Response
+│   ├── student/                  # StudentService, Mapper, UpdateRequest, Response
+│   ├── trainer/                  # PersonalTrainerService, Mapper, Request, Response
+│   └── training/                 # TrainingPlanService, Mapper, Request, UpdateRequest, Response
+│
+├── 📂 domain/                    # Business rules — rich entities, value objects, exceptions
+│   ├── measurement/              # Measurement, MeasurementDelta
+│   ├── nutrition/                # DietPlan, Meal
+│   ├── nutritionist/             # Nutritionist
+│   ├── person/                   # Person (abstract base)
+│   ├── shared/                   # Goal, TrainingLevel, DietFocus, Progressable
+│   ├── student/                  # Student
+│   ├── trainer/                  # PersonalTrainer
+│   ├── training/                 # TrainingPlan, Exercise
+│   └── user/                     # User, Role
+│
+├── 📂 infrastructure/            # Adapters — DB, security, external services
+│   ├── persistence/              # JPA repositories
+│   └── security/                 # JwtService, JwtAuthFilter, SecurityConfig
+│
+└── 📂 presentation/              # Controllers, exception handlers
+    ├── auth/
+    ├── exception/                # GlobalExceptionHandler, ErrorResponse
+    ├── measurement/
+    ├── nutrition/
+    ├── nutritionist/
+    ├── student/
+    ├── trainer/
+    ├── training/
+    └── UserController.java
+```
+
+---
+
+## Architecture Decisions
+
+### No Lombok
+Lombok generates invisible code that hides what the compiler actually sees. Every constructor, getter and method is written explicitly to keep the codebase readable, debuggable and easy to learn from.
+
+### Constructor injection only — no `@Autowired`
+Constructor injection makes dependencies explicit in the class signature, enables immutable fields (`final`), makes unit testing straightforward without a Spring context, and is the approach recommended by Spring itself since version 4. Field injection with `@Autowired` hides dependencies and makes cycles harder to detect.
+
+### Rich domain entities
+Entities are not plain data bags. Business rules live in the domain:
+- `Student.evolve()` — encapsulates level progression logic
+- `Student.assignTrainingPlan()` — maintains training history
+- `Student.assignDietPlan()` — links diet to student
+- `Measurement.calculateEvolutionFrom(baseline)` — computes body evolution deltas
+- `TrainingPlan.update()` / `DietPlan.update()` — controlled mutation via method, not public setters
+- `Person.setName()` / `Person.setPhone()` — validation at the base class
+
+### Protected no-arg constructor without validation
+JPA requires a no-argument constructor to instantiate entities during bootstrap (unsaved-value inference). This constructor is `protected` and contains no validation — rules live only in the public constructor that takes arguments.
+
+### Immutable collection views
+`TrainingPlan.getExercises()` and `DietPlan.getMeals()` return `Collections.unmodifiableList()`. External code cannot mutate internal state directly. Mutation only occurs through `update()`, which replaces the entire list after validation.
+
+### `MeasurementDelta` as a domain Value Object
+Computing the evolution between two measurements is domain knowledge, not service knowledge. `Measurement.calculateEvolutionFrom(baseline)` returns a `MeasurementDelta` that the service simply unpacks to build the response, keeping the logic testable inside the entity.
+
+### `@PreAuthorize` on controllers
+Role checks moved from method bodies (fragile `if` statements easy to forget) to declarative annotations. Spring enforces them before the method is invoked. `@EnableMethodSecurity` on `SecurityConfig` activates this — without it annotations are silently ignored.
+
+### Separate `TrainingPlanUpdateRequest` and `DietPlanUpdateRequest`
+Create requests include `studentId` to link the plan on creation. Update requests do not — the plan ID comes from the URL. Reusing the same record would silently ignore `studentId` on updates, which is misleading.
+
+### `POST /students` removed
+The direct student registration endpoint created a `Student` without an associated `User`, with no authentication. The correct flow is `POST /auth/register` with `role: STUDENT`, which creates both `User` and `Student` in a single transaction.
+
+### Nutritionist module mirrors the trainer module
+`Nutritionist` / `DietPlan` / `Meal` follow the same patterns as `PersonalTrainer` / `TrainingPlan` / `Exercise`. Consistency lowers cognitive load — understanding one module means understanding the other.
+
+### Nutritionist gets read access to training and measurement endpoints
+A nutritionist needs full student context to prescribe a diet: training level, body measurements, current training plan. Therefore `GET /students/{id}`, `GET /measurements/students/{id}` and `GET /training-plans/student/{id}/current` accept the `NUTRITIONIST` role.
+
+---
+
+## Commit Convention
+
+Following [Conventional Commits](https://www.conventionalcommits.org/):
+
+```
+type(scope): message
+
+types:  feat | fix | refactor | docs | test | chore
+scopes: domain | auth | student | trainer | nutritionist | training | nutrition | security | frontend
+```
+
+Examples:
+```
+feat(nutrition): add nutritionist module with diet plan management
+refactor(domain): add validation to Person base setters and constructor
+fix(domain): use no-arg super() in JPA constructors to avoid validation on bootstrap
+feat(security): replace manual role checks with @PreAuthorize
+docs: add project README with architecture decisions and endpoint reference
+```
+
+---
+
+---
+
+<div id="português">
+
+# 🏋️ Progressor — Documentação em Português
+
+> Plataforma de gestão de alunos para personal trainers e nutricionistas. Permite vincular alunos a profissionais, gerenciar planos de treino, planos de dieta e acompanhar a evolução física ao longo do tempo.
+
+**Backend** → `https://github.com/mauricioandrade/Progressor-V0.0.1`
+**Frontend** → `https://github.com/mauricioandrade/progressor-frontend`
 
 </div>
 
 ---
 
-## 📌 Sobre o Projeto
+## 📋 Índice
 
-**Progressor** é um sistema de gerenciamento de academia com foco em **evolução**. Alunos e personal trainers podem se cadastrar, registrar medidas, gerenciar planos de treino e acompanhar a evolução física ao longo do tempo.
-
-> Personal opcional. Autonomia máxima. Cada etapa registrada.
-
-**V0.0.1 está completa** — todos os 16 milestones implementados, do setup inicial até um frontend React totalmente funcional.
-
-🎨 **Frontend:** [github.com/mauricioandrade/progressor-frontend](https://github.com/mauricioandrade/progressor-frontend)
+- [Visão Geral](#visão-geral)
+- [Stack](#stack)
+- [Como Rodar](#como-rodar)
+- [Autenticação](#autenticação)
+- [Roles e Permissões](#roles-e-permissões)
+- [Referência da API](#referência-da-api)
+- [Estrutura do Projeto](#estrutura-do-projeto)
+- [Decisões de Arquitetura](#decisões-de-arquitetura)
+- [Convenção de Commits](#convenção-de-commits)
 
 ---
 
-## 🛠️ Tecnologias
+## Visão Geral
+
+O Progressor conecta três tipos de usuários em uma única plataforma:
+
+| Role | O que faz |
+|---|---|
+| 🎓 **Aluno** | Acompanha seu plano de treino, dieta e medições corporais |
+| 💪 **Personal Trainer** | Vincula alunos, cria e atribui planos de treino |
+| 🥗 **Nutricionista** | Vincula alunos, cria e atribui planos de dieta |
+
+Um aluno pode ter **um trainer** e **um nutricionista** simultaneamente. Ambos os profissionais podem visualizar as medições e planos atuais do aluno para uma abordagem integrada.
+
+---
+
+## Stack
+
+### Backend
 
 | Tecnologia | Versão | Finalidade |
 |---|---|---|
-| Java | 25 | Linguagem principal |
-| Spring Boot | 4.0.3 | Framework da aplicação |
-| Spring Web | — | API REST |
-| Spring Data JPA | — | Persistência de dados |
-| Spring Security | 7.x | Autenticação e autorização |
-| JJWT | 0.12.6 | Geração e validação de tokens JWT |
-| Spring Actuator | — | Health check e monitoramento |
-| SpringDoc OpenAPI | — | Documentação Swagger |
-| PostgreSQL | 18 | Banco de dados relacional |
-| Docker | — | Container do banco local |
-| Maven | — | Gerenciamento de dependências |
+| ☕ Java | 25 | Linguagem |
+| 🍃 Spring Boot | 4.0.3 | Framework |
+| 🔒 Spring Security | 7.0 | Autenticação e autorização |
+| 🪙 JWT (jjwt) | 0.12.6 | Tokens stateless |
+| 🗄️ Spring Data JPA | 4.0 | Camada de persistência |
+| 🐘 PostgreSQL | 18 | Banco de dados |
+| ✅ Bean Validation | 3.1 | Validação de entrada |
+| 📖 SpringDoc OpenAPI | 2.8 | Swagger UI |
+
+### Frontend
+
+| Tecnologia | Versão | Finalidade |
+|---|---|---|
+| ⚛️ React | 19 | Framework UI |
+| 📘 TypeScript | 5 | Tipagem estática |
+| ⚡ Vite | 6 | Build tool |
+| 🛣️ React Router | 7 | Roteamento |
+| 🔗 Axios | — | Cliente HTTP |
+| 📊 Recharts | — | Gráficos |
 
 ---
 
-## 🏗️ Arquitetura — Clean Architecture
-
-```
-dev.mauriciodev.Progressor_V001/
-│
-├── domain/                        → Entidades e regras de negócio
-│   ├── person/                    → Person (classe base)
-│   ├── student/                   → Entidade Student + exceções
-│   ├── trainer/                   → Entidade PersonalTrainer + exceções
-│   ├── training/                  → Entidade TrainingPlan + exceções
-│   ├── measurement/               → Entidade Measurement + exceções
-│   ├── shared/                    → Goal, TrainingLevel, Progressable
-│   └── user/                      → User (entidade de auth), Role
-│
-├── application/                   → Casos de uso, services, DTOs, mappers
-│   ├── auth/                      → AuthService, RegisterRequest, LoginRequest, AuthResponse
-│   ├── student/                   → StudentService, StudentRequest/Response, StudentMapper
-│   ├── trainer/                   → PersonalTrainerService, TrainerRequest/Response, TrainerMapper
-│   ├── training/                  → TrainingPlanService, TrainingPlanRequest/Response, TrainingPlanMapper
-│   └── measurement/               → MeasurementService, MeasurementRequest/Response, MeasurementMapper
-│
-├── infrastructure/                → Frameworks e integrações externas
-│   ├── persistence/               → Repositórios JPA
-│   ├── security/                  → Filtro JWT, SecurityConfig, UserDetailsServiceImpl
-│   └── openapi/                   → Configuração Swagger/OpenAPI
-│
-└── presentation/                  → Controllers REST e tratamento de exceções
-    ├── auth/                      → AuthController
-    ├── student/                   → StudentController
-    ├── trainer/                   → PersonalTrainerController
-    ├── training/                  → TrainingPlanController
-    ├── measurement/               → MeasurementController
-    ├── exception/                 → GlobalExceptionHandler
-    └── UserController             → /api/users/me
-```
-
----
-
-## 🚀 Como Rodar Localmente
+## Como Rodar
 
 ### Pré-requisitos
+
 - Java 25+
-- Maven
-- Docker Desktop
+- Node 20+
+- Docker
 
-### Passo a passo
+### 1. Banco de dados
 
-**1. Clone o repositório**
 ```bash
-git clone https://github.com/mauricioandrade/Progressor-V0.0.1.git
+docker run --name progressor-db \
+  -e POSTGRES_DB=progressor \
+  -e POSTGRES_USER=progressor \
+  -e POSTGRES_PASSWORD=progressor \
+  -p 5432:5432 \
+  -d postgres
+```
+
+### 2. Backend
+
+```bash
+git clone https://github.com/mauricioandrade/Progressor-V0.0.1
 cd Progressor-V0.0.1
+./mvnw spring-boot:run
 ```
 
-**2. Suba o container do PostgreSQL**
+> Sobe em `http://localhost:8081`
+> Swagger UI → `http://localhost:8081/swagger-ui.html`
+
+### 3. Frontend
+
 ```bash
-docker compose up -d
+git clone https://github.com/mauricioandrade/progressor-frontend
+cd progressor-frontend
+npm install
+npm run dev
 ```
 
-**3. Rode a aplicação**
-```bash
-mvn spring-boot:run
-```
+> Sobe em `http://localhost:5173`
 
-> O backend roda na **porta 8081** (`server.port=8081` no `application.yml`).
+### Variáveis de ambiente (backend)
 
----
+```yaml
+# src/main/resources/application.yml
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/progressor
+    username: progressor
+    password: progressor
+  jpa:
+    hibernate:
+      ddl-auto: update
 
-## 📖 Como Testar a API
-
-### Opção 1 — Swagger UI (browser)
-
-Acesse a documentação interativa:
-```
-http://localhost:8081/swagger-ui/index.html
-```
-
-**Como autenticar no Swagger:**
-1. Execute `POST /auth/login` com suas credenciais
-2. Copie o valor do campo `token` na resposta
-3. Clique no botão **Authorize 🔓** no topo da página
-4. Cole: `Bearer <seu_token>`
-5. Clique em **Authorize** — todas as requisições seguintes incluirão o token
-
-**Fluxo sugerido de testes no Swagger:**
-```
-POST /auth/register    → cria conta STUDENT
-POST /auth/register    → cria conta TRAINER
-POST /auth/login       → login como STUDENT, copia token e autoriza
-GET  /students/me      → visualiza perfil do aluno
-PUT  /students/me      → atualiza idade, peso, altura, objetivo
-POST /auth/login       → login como TRAINER, copia token e autoriza
-POST /trainers/me/students/{id}  → vincula aluno ao trainer
-POST /training-plans   → cria plano de treino para o aluno
-POST /auth/login       → login como STUDENT novamente
-GET  /training-plans/me/current  → visualiza plano atual
-POST /measurements     → registra uma medição
-POST /measurements     → registra uma segunda medição
-GET  /measurements/evolution     → visualiza os deltas de evolução
+jwt:
+  secret: <chave-com-minimo-32-caracteres>
+  expiration-ms: 86400000
 ```
 
 ---
 
-### Opção 2 — Coleção Postman
+## Autenticação
 
-Importe o arquivo `docs/Progressor-API.postman_collection.json`.
+Todos os endpoints exceto `/auth/**`, `/swagger-ui/**` e `/actuator/health` exigem JWT:
 
-**Funcionalidades da coleção:**
-- URL base configurada como variável `{{baseUrl}}` (`http://localhost:8081`)
-- As requisições de login salvam automaticamente `{{studentToken}}` e `{{trainerToken}}` como variáveis de coleção — sem necessidade de copiar manualmente
-- Todos os endpoints organizados por módulo: Auth, Students, Trainers, Training Plans, Measurements
-
-**Como começar:**
-1. Importe a coleção no Postman: **Import → Upload Files**
-2. Execute **Login Student** → token salvo automaticamente
-3. Execute **Login Trainer** → token salvo automaticamente
-4. Todas as demais requisições usam `{{studentToken}}` ou `{{trainerToken}}` automaticamente
-
----
-
-## 🌐 Endpoints da API
-
-### Autenticação
-| Método | Endpoint | Auth | Descrição |
-|---|---|---|---|
-| `POST` | `/auth/register` | ❌ | Registrar novo usuário (STUDENT ou TRAINER) |
-| `POST` | `/auth/login` | ❌ | Login e recebimento do token JWT |
-| `GET` | `/api/users/me` | ✅ | Retornar dados do usuário autenticado |
-
-### Alunos
-| Método | Endpoint | Auth | Descrição |
-|---|---|---|---|
-| `GET` | `/students/me` | ✅ STUDENT | Buscar próprio perfil |
-| `PUT` | `/students/me` | ✅ STUDENT | Atualizar próprio perfil |
-| `PATCH` | `/students/me/progress` | ✅ STUDENT | Disparar progressão de nível |
-
-### Personal Trainers
-| Método | Endpoint | Auth | Descrição |
-|---|---|---|---|
-| `GET` | `/trainers/me` | ✅ TRAINER | Buscar próprio perfil |
-| `POST` | `/trainers/me/students/{id}` | ✅ TRAINER | Vincular aluno |
-| `DELETE` | `/trainers/me/students/{id}` | ✅ TRAINER | Desvincular aluno |
-| `GET` | `/trainers/me/students` | ✅ TRAINER | Listar alunos supervisionados |
-
-### Planos de Treino
-| Método | Endpoint | Auth | Descrição |
-|---|---|---|---|
-| `POST` | `/training-plans` | ✅ TRAINER | Criar plano para um aluno |
-| `POST` | `/training-plans/me` | ✅ STUDENT | Criar próprio plano de treino |
-| `GET` | `/training-plans/me/current` | ✅ STUDENT | Buscar plano ativo atual |
-| `GET` | `/training-plans/me/history` | ✅ STUDENT | Histórico de planos |
-| `GET` | `/training-plans` | ✅ | Listar todos os planos |
-
-### Medidas
-| Método | Endpoint | Auth | Descrição |
-|---|---|---|---|
-| `POST` | `/measurements` | ✅ STUDENT | Registrar nova medição |
-| `GET` | `/measurements` | ✅ STUDENT | Listar todas as medições |
-| `GET` | `/measurements/evolution` | ✅ STUDENT | Calcular deltas de evolução |
-| `GET` | `/measurements/trainer/students/{id}` | ✅ TRAINER | Ver medições de um aluno |
-
-**Campos de medição:**
-`weightKg`, `heightCm`, `bodyFatPercent`, `muscleMassPercent`, `waistCm`, `hipCm`, `chestCm`, `rightArmCm`, `leftArmCm`, `rightThighCm`, `leftThighCm`
-
-### Monitoramento
-| Método | Endpoint | Auth | Descrição |
-|---|---|---|---|
-| `GET` | `/actuator/health` | ❌ | Health check da aplicação |
-
----
-
-## 🗺️ Roadmap
-
-- [x] 🏗️ **M1** — Project Foundation (setup, Docker, enums, estrutura de pacotes)
-- [x] 🧱 **M2** — Core Entities (Person, Student, PersonalTrainer, TrainingPlan)
-- [x] ⚙️ **M3** — Business Layer (repositórios e services)
-- [x] 🌐 **M4** — REST API (controllers e DTOs)
-- [x] 📈 **M5** — Progression System (interface Progressable e lógica de evolução)
-- [x] 🩺 **M6** — Health Check (Spring Actuator)
-- [x] 📦 **M7** — Docker Complete (Dockerfile e docker-compose completo)
-- [x] 📖 **M8** — API Documentation (Swagger / OpenAPI)
-- [x] 🔐 **M9** — Authentication (Spring Security + JWT)
-- [x] ♻️ **M10** — Refactor: Clean Architecture Migration
-- [x] 🔗 **M11** — Auth: User–Domain Binding (User ↔ Student / Trainer)
-- [x] 🎓 **M12** — Student Module (endpoints de auto-serviço)
-- [x] 🏋️ **M13** — Personal Trainer Module (perfil + supervisão de alunos)
-- [x] 📋 **M14** — Training Plans Module (controle por role + auto-serviço)
-- [x] 📏 **M15** — Measurements Module (peso, gordura, braço D/E, coxa D/E...)
-- [x] 🎨 **M16** — Frontend (React + Vite + TypeScript + Tailwind)
-
----
-
-## 🤝 Como Contribuir
-
-### 1. Faça um Fork do repositório
-### 2. Clone o seu fork
-```bash
-git clone https://github.com/SEU_USUARIO/Progressor-V0.0.1.git
 ```
-### 3. Crie uma branch e faça seus commits
-```bash
-git checkout -b feature/issue-XX-descricao-curta
-git commit -m "feat(escopo): descrição curta em inglês"
-git push origin feature/issue-XX-descricao-curta
+Authorization: Bearer <token>
 ```
-Abra um **Pull Request** apontando para a branch `main`.
 
----
+### Registro
 
-## 📋 Convenção de Commits
+```http
+POST /auth/register
+```
 
-| Tipo | Quando usar |
+```json
+{
+  "email": "trainer@example.com",
+  "password": "Senha123",
+  "name": "João Silva",
+  "phone": "11999999999",
+  "cref": "123456-G/SP",
+  "role": "TRAINER"
+}
+```
+
+| Role | Campos extras obrigatórios |
 |---|---|
-| `feat` | Nova funcionalidade |
-| `fix` | Correção de bug |
-| `chore` | Setup, config, dependências |
-| `refactor` | Melhoria sem mudar comportamento |
-| `docs` | Documentação |
-| `test` | Testes |
+| `STUDENT` | `birthDate` (yyyy-MM-dd) |
+| `TRAINER` | `cref` |
+| `NUTRITIONIST` | `crn` |
+
+### Login
+
+```http
+POST /auth/login
+```
+
+```json
+{
+  "email": "trainer@example.com",
+  "password": "Senha123"
+}
+```
+
+---
+
+## Roles e Permissões
+
+| Role | Descrição |
+|---|---|
+| `STUDENT` | Perfil próprio, plano de treino, dieta e medições |
+| `TRAINER` | Gerencia alunos vinculados e planos de treino |
+| `NUTRITIONIST` | Gerencia alunos vinculados e planos de dieta |
+| `ADMIN` | Acesso total |
+
+---
+
+## Referência da API
+
+### 🔐 Auth
+| Método | Endpoint | Acesso | Descrição |
+|---|---|---|---|
+| POST | `/auth/register` | público | Cadastro de usuário |
+| POST | `/auth/login` | público | Login, retorna JWT |
+
+### 🎓 Alunos
+| Método | Endpoint | Acesso | Descrição |
+|---|---|---|---|
+| GET | `/students` | TRAINER, NUTRITIONIST, ADMIN | Listar todos |
+| GET | `/students/{id}` | TRAINER, NUTRITIONIST, ADMIN | Buscar por ID |
+| PATCH | `/students/{id}/progress` | TRAINER, ADMIN | Evoluir nível |
+| GET | `/students/me` | autenticado | Perfil próprio |
+| PUT | `/students/me` | autenticado | Atualizar perfil |
+| PATCH | `/students/me/progress` | autenticado | Evoluir próprio nível |
+| POST | `/students/me/avatar` | autenticado | Upload de avatar |
+| GET | `/students/me/avatar` | autenticado | Buscar avatar |
+
+### 💪 Trainers
+| Método | Endpoint | Acesso | Descrição |
+|---|---|---|---|
+| GET | `/trainers/me` | TRAINER | Perfil próprio |
+| POST | `/trainers/me/avatar` | TRAINER | Upload de avatar |
+| GET | `/trainers/me/avatar` | TRAINER | Buscar avatar |
+| GET | `/trainers/me/students` | TRAINER | Alunos vinculados |
+| POST | `/trainers/me/students/{id}` | TRAINER | Vincular aluno |
+| DELETE | `/trainers/me/students/{id}` | TRAINER | Desvincular aluno |
+| GET | `/trainers` | TRAINER, ADMIN | Listar todos |
+| GET | `/trainers/{id}` | TRAINER, ADMIN | Buscar por ID |
+| POST | `/trainers` | ADMIN | Cadastrar trainer |
+
+### 🥗 Nutricionistas
+| Método | Endpoint | Acesso | Descrição |
+|---|---|---|---|
+| GET | `/nutritionists/me` | NUTRITIONIST | Perfil próprio |
+| POST | `/nutritionists/me/avatar` | NUTRITIONIST | Upload de avatar |
+| GET | `/nutritionists/me/avatar` | NUTRITIONIST | Buscar avatar |
+| GET | `/nutritionists/me/students` | NUTRITIONIST | Alunos vinculados |
+| POST | `/nutritionists/me/students/{id}` | NUTRITIONIST | Vincular aluno |
+| DELETE | `/nutritionists/me/students/{id}` | NUTRITIONIST | Desvincular aluno |
+| GET | `/nutritionists` | NUTRITIONIST, ADMIN | Listar todos |
+| GET | `/nutritionists/{id}` | NUTRITIONIST, ADMIN | Buscar por ID |
+
+### 🏃 Planos de Treino
+| Método | Endpoint | Acesso | Descrição |
+|---|---|---|---|
+| POST | `/training-plans` | TRAINER | Criar plano para aluno |
+| PUT | `/training-plans/{id}` | TRAINER | Atualizar plano |
+| DELETE | `/training-plans/{id}` | TRAINER | Remover plano |
+| POST | `/training-plans/{id}/assign/{studentId}` | TRAINER | Alocar a aluno |
+| GET | `/training-plans` | TRAINER, ADMIN | Listar todos |
+| GET | `/training-plans/{id}` | TRAINER, ADMIN | Buscar por ID |
+| GET | `/training-plans/me/current` | autenticado | Plano atual do aluno logado |
+| GET | `/training-plans/me/history` | autenticado | Histórico do aluno logado |
+| GET | `/training-plans/student/{id}/current` | TRAINER, NUTRITIONIST, ADMIN | Plano atual de um aluno |
+
+### 🥦 Planos de Dieta
+| Método | Endpoint | Acesso | Descrição |
+|---|---|---|---|
+| POST | `/diet-plans` | NUTRITIONIST | Criar plano para aluno |
+| PUT | `/diet-plans/{id}` | NUTRITIONIST | Atualizar plano |
+| DELETE | `/diet-plans/{id}` | NUTRITIONIST | Remover plano |
+| POST | `/diet-plans/{id}/assign/{studentId}` | NUTRITIONIST | Alocar a aluno |
+| GET | `/diet-plans` | NUTRITIONIST, ADMIN | Listar todos |
+| GET | `/diet-plans/{id}` | NUTRITIONIST, ADMIN | Buscar por ID |
+| GET | `/diet-plans/me/current` | autenticado | Dieta atual do aluno logado |
+| GET | `/diet-plans/student/{id}/current` | TRAINER, NUTRITIONIST, ADMIN | Dieta atual de um aluno |
+
+### 📏 Medições
+| Método | Endpoint | Acesso | Descrição |
+|---|---|---|---|
+| POST | `/measurements` | autenticado | Registrar medição |
+| GET | `/measurements` | autenticado | Próprias medições |
+| GET | `/measurements/evolution` | autenticado | Própria evolução |
+| GET | `/measurements/students/{id}` | TRAINER, NUTRITIONIST, ADMIN | Medições de um aluno |
+| GET | `/measurements/students/{id}/evolution` | TRAINER, NUTRITIONIST, ADMIN | Evolução de um aluno |
+
+---
+
+## Estrutura do Projeto
+
+```
+src/main/java/dev/mauriciodev/progressor/
+│
+├── 📂 application/               # Casos de uso — orquestração, sem regras de negócio
+│   ├── auth/
+│   ├── measurement/
+│   ├── nutrition/
+│   ├── nutritionist/
+│   ├── student/
+│   ├── trainer/
+│   └── training/
+│
+├── 📂 domain/                    # Regras de negócio — entidades ricas, value objects, exceções
+│   ├── measurement/              # Measurement, MeasurementDelta
+│   ├── nutrition/                # DietPlan, Meal
+│   ├── nutritionist/             # Nutritionist
+│   ├── person/                   # Person (base abstrata)
+│   ├── shared/                   # Goal, TrainingLevel, DietFocus, Progressable
+│   ├── student/                  # Student
+│   ├── trainer/                  # PersonalTrainer
+│   ├── training/                 # TrainingPlan, Exercise
+│   └── user/                     # User, Role
+│
+├── 📂 infrastructure/            # Adaptadores — banco, segurança, serviços externos
+│   ├── persistence/              # Repositórios JPA
+│   └── security/                 # JwtService, JwtAuthFilter, SecurityConfig
+│
+└── 📂 presentation/              # Controllers e tratamento de exceções
+    ├── auth/
+    ├── exception/
+    ├── measurement/
+    ├── nutrition/
+    ├── nutritionist/
+    ├── student/
+    ├── trainer/
+    ├── training/
+    └── UserController.java
+```
+
+---
+
+## Decisões de Arquitetura
+
+### Sem Lombok
+Lombok gera código invisível que dificulta o aprendizado e o debug. Todo boilerplate é escrito explicitamente para manter o código legível e rastreável.
+
+### Sem `@Autowired` — constructor injection
+Injeção por construtor torna as dependências explícitas, permite campos `final` imutáveis, facilita testes unitários sem contexto Spring e é a abordagem recomendada pelo próprio Spring desde a versão 4. `@Autowired` em campo oculta dependências e dificulta a detecção de ciclos.
+
+### Entidades com comportamento rico
+Entidades não são simples bags de dados. Regras de negócio vivem no domínio:
+- `Student.evolve()` — encapsula a lógica de progressão de nível
+- `Student.assignTrainingPlan()` — mantém o histórico de treinos
+- `Student.assignDietPlan()` — vincula dieta ao aluno
+- `Measurement.calculateEvolutionFrom(baseline)` — calcula deltas de evolução física
+- `TrainingPlan.update()` / `DietPlan.update()` — mutação controlada via método, não setters
+- `Person.setName()` / `Person.setPhone()` — validação na própria base
+
+### Construtor no-arg protegido sem validação
+O JPA exige um construtor sem argumentos para instanciar entidades durante o bootstrap. Esse construtor é `protected` e não contém validação — as regras ficam apenas no construtor público com argumentos.
+
+### Visões imutáveis das coleções
+`TrainingPlan.getExercises()` e `DietPlan.getMeals()` retornam `Collections.unmodifiableList()`. Código externo não consegue modificar o estado interno diretamente. A mutação só ocorre via `update()`, que substitui a lista inteira após validação.
+
+### `MeasurementDelta` como Value Object de domínio
+O cálculo de evolução entre duas medições é conhecimento do domínio, não do serviço. `Measurement.calculateEvolutionFrom(baseline)` retorna um `MeasurementDelta` que o serviço apenas desempacota para montar o response, mantendo a lógica testável na entidade.
+
+### `@PreAuthorize` nos controllers
+As verificações de role saíram dos métodos (ifs frágeis fáceis de esquecer) para anotações declarativas. O Spring garante a verificação antes de o método ser invocado. `@EnableMethodSecurity` no `SecurityConfig` ativa esse mecanismo — sem ele as anotações são ignoradas silenciosamente.
+
+### `TrainingPlanUpdateRequest` e `DietPlanUpdateRequest` separados
+Requests de criação incluem `studentId` para vincular o plano ao aluno. Requests de atualização não precisam — o ID vem pela URL. Reutilizar o mesmo record forçaria `studentId` a ser ignorado silenciosamente no update.
+
+### `POST /students` removido
+O endpoint criava um `Student` sem `User` associado, sem autenticação. O fluxo correto é `POST /auth/register` com `role: STUDENT`, que cria `User` e `Student` em uma única transação atômica.
+
+### Módulo de nutrição espelha o de treino
+`Nutritionist` / `DietPlan` / `Meal` seguem exatamente os mesmos padrões de `PersonalTrainer` / `TrainingPlan` / `Exercise`. A consistência reduz a carga cognitiva — entender um módulo significa entender o outro.
+
+### Nutricionista com acesso de leitura aos endpoints de treino e medição
+O nutricionista precisa de contexto completo do aluno para prescrever uma dieta: nível de treino, medições corporais, plano de treino atual. Por isso `GET /students/{id}`, `GET /measurements/students/{id}` e `GET /training-plans/student/{id}/current` aceitam a role `NUTRITIONIST`.
+
+---
+
+## Convenção de Commits
+
+Seguimos [Conventional Commits](https://www.conventionalcommits.org/):
+
+```
+tipo(escopo): mensagem
+
+tipos:   feat | fix | refactor | docs | test | chore
+escopos: domain | auth | student | trainer | nutritionist | training | nutrition | security | frontend
+```
+
+Exemplos:
+```
+feat(nutrition): add nutritionist module with diet plan management
+refactor(domain): add validation to Person base setters and constructor
+fix(domain): use no-arg super() in JPA constructors to avoid validation on bootstrap
+feat(security): replace manual role checks with @PreAuthorize
+docs: add project README with architecture decisions and endpoint reference
+```
 
 ---
 
 <div align="center">
-  <sub>Built with 💪 by <a href="https://github.com/mauricioandrade">mauricioandrade</a></sub>
+
+Made with ☕ and 💪
+
 </div>
